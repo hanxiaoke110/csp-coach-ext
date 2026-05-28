@@ -1,0 +1,63 @@
+{
+  "problemId": "P66-binary-search",
+  "title": "找找呗",
+  "lessonTitle": "P66-二分查找（一）",
+  "stages": [
+    {
+      "id": 0,
+      "name": "情境引入",
+      "type": "intro",
+      "audioFile": "stage-0.mp3",
+      "narration": "同学们好！你有没有遇到过这样的情况：老师给你一串数字，问你某个数字在不在里面？比如班级学号列表里，有没有168号同学？这就是今天我们要解决的问题——查找。我们先从最简单的办法开始：一个一个找！",
+      "html": "<div style=\"text-align:center\">\n<div class=\"big-icon\">🎯</div>\n<div class=\"intro-title\">找找呗</div>\n<div class=\"intro-sub\">P66-二分查找（一）</div>\n</div>"
+    },
+    {
+      "id": 1,
+      "name": "条件拆解",
+      "type": "conditions",
+      "audioFile": "stage-1.mp3",
+      "narration": "查找问题很简单，就两步。第一步，把所有的数字存到数组里。第二步，对于每个要查找的目标数，从数组头到尾扫描一遍，看有没有和它相等的。如果找到了就输出yes，没找到就输出no。这种一个一个找的方法，叫顺序查找，也叫线性查找。",
+      "html": "<div class=\"info-card\">\n<div style=\"font-size:17px;margin:8px 0\">查找问题很简单，就两步</div>\n<div style=\"font-size:17px;margin:8px 0\">第一步，把所有的数字存到数组里</div>\n<div style=\"font-size:17px;margin:8px 0\">第二步，对于每个要查找的目标数，从数组头到尾扫描一遍，看有没有和它相等的</div>\n<div style=\"font-size:17px;margin:8px 0\">如果找到了就输出yes，没找到就输出no</div>\n</div>"
+    },
+    {
+      "id": 2,
+      "name": "算法演示",
+      "type": "algorithm",
+      "audioFile": "stage-2.mp3",
+      "narration": "我们来看一个例子。数组里有7个数字：15、8、23、6、42、19、7。现在要查23在不在里面。从第一个开始：15等于23吗？不是。8等于23吗？不是。23等于23吗？是！找到了，输出yes，停止查找。如果要查50呢？从头找到尾，没有一个等于50，输出no。每次查找最多要扫描全部n个数字。如果有q次查询，最坏情况下需要做n乘q次比较。当n和q都很大的时候，程序会很慢很慢。",
+      "html": "<div class=\"info-card\" style=\"font-size:16px\">\n<div style=\"font-size:20px;margin-bottom:12px\">🎬 算法演示</div>\n<div style=\"margin:6px 0;text-align:left\">我们来看一个例子</div>\n<div style=\"margin:6px 0;text-align:left\">数组里有7个数字：15、8、23、6、42、19、7</div>\n<div style=\"margin:6px 0;text-align:left\">现在要查23在不在里面</div>\n<div style=\"margin:6px 0;text-align:left\">从第一个开始：15等于23吗？不是</div>\n<div style=\"margin:6px 0;text-align:left\">8等于23吗？不是</div>\n<div style=\"margin:6px 0;text-align:left\">23等于23吗？是！找到了，输出yes，停止查找</div>\n</div>"
+    },
+    {
+      "id": 3,
+      "name": "运行结果",
+      "type": "result",
+      "audioFile": "stage-3.mp3",
+      "narration": "程序运行结果：查23输出yes，查50输出no。简单直接！但是，注意了，如果数组有十万个数，查十万次，最坏情况下要比较一百亿次！对于很多题目来说，这个速度太慢了，程序会超时。那有没有更快的查找方法呢？",
+      "html": "<div style=\"text-align:center\">\n<div style=\"font-size:48px;margin-bottom:16px\">✅</div>\n<div class=\"info-card\">程序运行结果：查23输出yes，查50输出no。简单直接！但是，注意了，如果数组有十万个数，查十万次，最坏情况下要比较一百亿次！对于很多题目来说，这个速度太慢了，程序会超时。那有没有更快的查找方法呢？</div>\n</div>"
+    },
+    {
+      "id": 4,
+      "name": "代码映射",
+      "type": "codeMapping",
+      "audioFile": "stage-4.mp3",
+      "narration": "我们来看看关键代码。核心是一个for循环，逐个遍历数组元素。如果当前元素等于目标数，就把flag设为1，然后break跳出循环。flag是一个标记，0表示没找到，1表示找到了。最后根据flag的值输出yes或no。代码非常简单，但时间复杂度是n乘q，在数据大的时候会超时。这就是为什么要学二分查找——它能把查找时间从n降到log n！",
+      "html": "<div style=\"text-align:center\">\n<div style=\"font-size:18px;font-weight:700;color:var(--p);margin-bottom:16px\">💻 关键代码</div>\n<div class=\"code-card\">我们来看看关键代码。核心是一个for循环，逐个遍历数组元素。如果当前元素等于目标数，就把flag设为1，然后break跳出循环。flag是一个标记，0表示没找到，1表示找到了。最后根据flag的值输出yes或no。代码非常简单，但时间复杂度是n乘q，在数据大的时候会超时。这就是为什么要学二分查找——它能把查找时间从n降到log n！</div>\n</div>"
+    },
+    {
+      "id": 5,
+      "name": "易错提醒",
+      "type": "pitfall",
+      "audioFile": "stage-5.mp3",
+      "narration": "有几个地方要注意。第一，flag变量一定要初始化为0，如果忘记初始化，它可能是一个随机值，导致结果出错。第二，找到目标数后要用break跳出循环，否则会继续浪费时间去比较后面的元素。第三，数组大小要根据题目数据范围来定义，这道题最多十万个数，我们开了足够大的空间。第四，输出yes和no都是小写，注意拼写！",
+      "html": "<div class=\"warn-card\">\n<div style=\"font-size:20px;margin-bottom:12px\">⚠️ 易错点提醒</div>\n<div style=\"margin:6px 0;text-align:left\">• 有几个地方要注意</div>\n<div style=\"margin:6px 0;text-align:left\">• 第一，flag变量一定要初始化为0，如果忘记初始化，它可能是一个随机值，导致结果出错</div>\n<div style=\"margin:6px 0;text-align:left\">• 第二，找到目标数后要用break跳出循环，否则会继续浪费时间去比较后面的元素</div>\n<div style=\"margin:6px 0;text-align:left\">• 第三，数组大小要根据题目数据范围来定义，这道题最多十万个数，我们开了足够大的空间</div>\n<div style=\"margin:6px 0;text-align:left\">• 第四，输出yes和no都是小写，注意拼写</div>\n</div>"
+    },
+    {
+      "id": 6,
+      "name": "拓展思考",
+      "type": "extension",
+      "audioFile": "stage-6.mp3",
+      "narration": "顺序查找虽然简单，但太慢了。想一想：如果数组已经从小到大排好序了，我们能不能用更快的方法来查找呢？比如你翻字典的时候，不会从第一页翻到最后一页，而是先翻到中间，看看要找的字在前面还是后面。这就是二分查找的思想！下一节课我们就来学它，请期待！",
+      "html": "<div class=\"think-card\">\n<div style=\"font-size:48px;margin-bottom:12px\">🤔</div>\n<div>顺序查找虽然简单，但太慢了。想一想：如果数组已经从小到大排好序了，我们能不能用更快的方法来查找呢？比如你翻字典的时候，不会从第一页翻到最后一页，而是先翻到中间，看看要找的字在前面还是后面。这就是二分查找的思想！下一节课我们就来学它，请期待！</div>\n</div>"
+    }
+  ]
+}

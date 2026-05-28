@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>15579-拓展练习1</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">15579-拓展练习1</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>15579-拓展练习1</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：认识我们的数据</h2><p>我们有一排数字，就像小朋友排队站好：</p><p><span style='display:inline-block; width:40px; height:40px; background:#FF6B6B; color:white; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>5</span><span style='display:inline-block; width:40px; height:40px; background:#4ECDC4; color:white; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>3</span><span style='display:inline-block; width:40px; height:40px; background:#FFE66D; color:#333; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>8</span><span style='display:inline-block; width:40px; height:40px; background:#95E1D3; color:#333; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>2</span><span style='display:inline-block; width:40px; height:40px; background:#F38181; color:white; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>7</span></p><p>每个数字有自己的位置，从第1个到第5个。现在我们要找出某些位置里的最大数字。</p>","narration":"第一步，我们先认识一下这些数字。每个数字都有一个位置编号，就像小朋友排队时都有自己的号码。我们要在这些数字中，找到指定范围内的最大数字。"},{"html":"<h2>第二步：找到要查找的范围</h2><p>题目给了几个区间，比如：<span style='background:#A8E6CF; padding:3px 8px; border-radius:5px;'>[2,4]</span> 和 <span style='background:#D4A5A5; padding:3px 8px; border-radius:5px;'>[3,5]</span></p><p>我们要找出这些区间的<span style='color:#FF6B6B; font-weight:bold;'>共同部分</span>：</p><p>左边界取最大的：max(2,3) = <span style='color:#FF6B6B; font-weight:bold;'>3</span></p><p>右边界取最小的：min(4,5) = <span style='color:#4ECDC4; font-weight:bold;'>4</span></p><p>所以共同范围是：<span style='background:#FFE66D; padding:3px 8px; border-radius:5px;'>[3,4]</span></p>","narration":"第二步，我们要找到所有区间的共同部分。就像几个小朋友都想去的地方，我们要找到大家都同意的那一段。左边界要取最大的那个数，右边界要取最小的那个数。"},{"html":"<h2>第三步：检查有没有共同范围</h2><p>如果左边界比右边界大，比如 <span style='color:#FF6B6B;'>L=5</span>，<span style='color:#4ECDC4;'>R=3</span>，那就没有共同范围了！</p><p>就像这样：</p><p><span style='display:inline-block; width:40px; height:40px; background:#FF6B6B; color:white; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>5</span><span style='display:inline-block; width:40px; height:40px; background:#4ECDC4; color:white; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>3</span><span style='display:inline-block; width:40px; height:40px; background:#FFE66D; color:#333; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>8</span><span style='display:inline-block; width:40px; height:40px; background:#95E1D3; color:#333; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>2</span><span style='display:inline-block; width:40px; height:40px; background:#F38181; color:white; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>7</span></p><p>如果L=5，R=3，那L>R，说明没有共同范围，答案就是<span style='color:#FF6B6B; font-weight:bold;'>-1</span>。</p>","narration":"第三步，我们要检查一下有没有共同范围。如果左边界比右边界大，就像你要去第5个位置，但只能走到第3个位置，这是不可能的，所以就没有共同范围，答案就是-1。"},{"html":"<h2>第四步：在共同范围里找最大数</h2><p>假设共同范围是 <span style='background:#FFE66D; padding:3px 8px; border-radius:5px;'>[3,4]</span>，我们只看这两个位置：</p><p><span style='display:inline-block; width:40px; height:40px; background:#ccc; color:#999; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>5</span><span style='display:inline-block; width:40px; height:40px; background:#ccc; color:#999; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>3</span><span style='display:inline-block; width:40px; height:40px; background:#FF6B6B; color:white; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>8</span><span style='display:inline-block; width:40px; height:40px; background:#4ECDC4; color:white; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>2</span><span style='display:inline-block; width:40px; height:40px; background:#ccc; color:#999; text-align:center; line-height:40px; border-radius:5px; margin:2px;'>7</span></p><p>比较这两个数：<span style='color:#FF6B6B; font-weight:bold;'>8</span> 和 <span style='color:#4ECDC4; font-weight:bold;'>2</span></p><p>最大的数是：<span style='color:#FF6B6B; font-weight:bold; font-size:24px;'>8</span></p>","narration":"第四步，我们就在共同范围里找最大的数字。就像在几个小朋友中找出最高的那个，我们只比较共同范围内的数字，找出最大的那个就是答案。"},{"html":"<h2>第五步：总结一下</h2><p>我们学会了：</p><p>1️⃣ 找出所有区间的<span style='color:#FF6B6B; font-weight:bold;'>共同部分</span>（左边界取最大，右边界取最小）</p><p>2️⃣ 检查有没有共同部分（L>R就没有）</p><p>3️⃣ 在共同部分里<span style='color:#4ECDC4; font-weight:bold;'>找最大数</span></p><p>就像玩寻宝游戏，先找到大家都能去的范围，再在里面找最大的宝藏！</p>","narration":"第五步，我们来总结一下。先找到所有区间的共同部分，检查有没有共同范围，最后在共同范围里找出最大的数字。这样我们就完成了这道题目！"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

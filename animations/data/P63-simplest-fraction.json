@@ -1,0 +1,63 @@
+{
+  "problemId": "P63-simplest-fraction",
+  "title": "最简分数",
+  "lessonTitle": "P63-初等数论（一）",
+  "stages": [
+    {
+      "id": 0,
+      "name": "情境引入",
+      "type": "intro",
+      "audioFile": "stage-0.mp3",
+      "narration": "同学们好！今天我们来解决一个生活中常见的问题——约分。比如你吃了一个披萨的8分之4，老师可能会说，这不就是2分之1嘛！8分之4和2分之1其实是同一个分数，但2分之1更简单。怎么用程序帮我们把任意分数变成最简分数呢？答案就是用最大公约数！",
+      "html": "<div style=\"text-align:center\">\n<div class=\"big-icon\">🎯</div>\n<div class=\"intro-title\">最简分数</div>\n<div class=\"intro-sub\">P63-初等数论（一）</div>\n</div>"
+    },
+    {
+      "id": 1,
+      "name": "条件拆解",
+      "type": "conditions",
+      "audioFile": "stage-1.mp3",
+      "narration": "把一个分数变成最简分数，只需要两步。第一步，求出分子和分母的最大公约数。第二步，把分子和分母都除以这个最大公约数。比如8分之4，分子4和分母8的最大公约数是4，都除以4就变成了2分之1。所以问题的关键就是——怎么求最大公约数？",
+      "html": "<div class=\"info-card\">\n<div style=\"font-size:17px;margin:8px 0\">把一个分数变成最简分数，只需要两步</div>\n<div style=\"font-size:17px;margin:8px 0\">第一步，求出分子和分母的最大公约数</div>\n<div style=\"font-size:17px;margin:8px 0\">第二步，把分子和分母都除以这个最大公约数</div>\n<div style=\"font-size:17px;margin:8px 0\">比如8分之4，分子4和分母8的最大公约数是4，都除以4就变成了2分之1</div>\n</div>"
+    },
+    {
+      "id": 2,
+      "name": "算法演示",
+      "type": "algorithm",
+      "audioFile": "stage-2.mp3",
+      "narration": "求最大公约数有一个很巧妙的方法，叫辗转相除法。我们来演示一下，求12和8的最大公约数。12除以8商1余4，然后把8当成被除数、4当成除数。8除以4商2余0，余数为0的时候，除数4就是最大公约数。再试一个：求30和18的最大公约数。30除以18商1余12。18除以12商1余6。12除以6商2余0。余数为0，所以最大公约数是6。是不是很巧妙？",
+      "html": "<div class=\"info-card\" style=\"font-size:16px\">\n<div style=\"font-size:20px;margin-bottom:12px\">🎬 算法演示</div>\n<div style=\"margin:6px 0;text-align:left\">求最大公约数有一个很巧妙的方法，叫辗转相除法</div>\n<div style=\"margin:6px 0;text-align:left\">我们来演示一下，求12和8的最大公约数</div>\n<div style=\"margin:6px 0;text-align:left\">12除以8商1余4，然后把8当成被除数、4当成除数</div>\n<div style=\"margin:6px 0;text-align:left\">8除以4商2余0，余数为0的时候，除数4就是最大公约数</div>\n<div style=\"margin:6px 0;text-align:left\">再试一个：求30和18的最大公约数</div>\n<div style=\"margin:6px 0;text-align:left\">30除以18商1余12</div>\n</div>"
+    },
+    {
+      "id": 3,
+      "name": "运行结果",
+      "type": "result",
+      "audioFile": "stage-3.mp3",
+      "narration": "求出了最大公约数之后，把分子分母都除以它，就得到了最简分数。比如输入12和8，最大公约数是4，输出12除以4等于3，8除以4等于2，所以最简分数是3分之2。程序完美运行！",
+      "html": "<div style=\"text-align:center\">\n<div style=\"font-size:48px;margin-bottom:16px\">✅</div>\n<div class=\"info-card\">求出了最大公约数之后，把分子分母都除以它，就得到了最简分数。比如输入12和8，最大公约数是4，输出12除以4等于3，8除以4等于2，所以最简分数是3分之2。程序完美运行！</div>\n</div>"
+    },
+    {
+      "id": 4,
+      "name": "代码映射",
+      "type": "codeMapping",
+      "audioFile": "stage-4.mp3",
+      "narration": "现在我们来看看关键代码。核心是一个gcd函数，用了while循环实现辗转相除。循环条件是a模b不等于0，也就是余数不为0。只要余数不为0，就把b变成新的a、余数变成新的b，继续除。余数为0时，b就是最大公约数。主函数里，先确保a是较小的数，然后调用gcd求最大公约数k，最后分子分母都除以k输出。代码简洁但包含了数论的核心思想！",
+      "html": "<div style=\"text-align:center\">\n<div style=\"font-size:18px;font-weight:700;color:var(--p);margin-bottom:16px\">💻 关键代码</div>\n<div class=\"code-card\">现在我们来看看关键代码。核心是一个gcd函数，用了while循环实现辗转相除。循环条件是a模b不等于0，也就是余数不为0。只要余数不为0，就把b变成新的a、余数变成新的b，继续除。余数为0时，b就是最大公约数。主函数里，先确保a是较小的数，然后调用gcd求最大公约数k，最后分子分母都除以k输出。代码简洁但包含了数论的核心思想！</div>\n</div>"
+    },
+    {
+      "id": 5,
+      "name": "易错提醒",
+      "type": "pitfall",
+      "audioFile": "stage-5.mp3",
+      "narration": "有几个要注意的地方。第一，while循环的条件是a模b不等于0，注意是不等于，写成等于就全错了。第二，在while循环里面，一定要先把余数存到临时变量r，再依次赋值，顺序不能乱。第三，返回的是b不是r，因为最后r为0的时候，b就是答案。第四，输出格式一般是分子斜杠分母，不要写成别的样子哦！",
+      "html": "<div class=\"warn-card\">\n<div style=\"font-size:20px;margin-bottom:12px\">⚠️ 易错点提醒</div>\n<div style=\"margin:6px 0;text-align:left\">• 有几个要注意的地方</div>\n<div style=\"margin:6px 0;text-align:left\">• 第一，while循环的条件是a模b不等于0，注意是不等于，写成等于就全错了</div>\n<div style=\"margin:6px 0;text-align:left\">• 第二，在while循环里面，一定要先把余数存到临时变量r，再依次赋值，顺序不能乱</div>\n<div style=\"margin:6px 0;text-align:left\">• 第三，返回的是b不是r，因为最后r为0的时候，b就是答案</div>\n<div style=\"margin:6px 0;text-align:left\">• 第四，输出格式一般是分子斜杠分母，不要写成别的样子哦</div>\n</div>"
+    },
+    {
+      "id": 6,
+      "name": "拓展思考",
+      "type": "extension",
+      "audioFile": "stage-6.mp3",
+      "narration": "最后留给大家一个思考题：除了辗转相除法，还有一种更原始的方法叫枚举法，就是从1开始一个一个试，找到能同时整除两个数的最大值。辗转相除法和枚举法哪个更快？如果是很大的数，比如100000和99999，你能感受到它们的区别吗？下一节课我们要学习质因数分解，敬请期待！",
+      "html": "<div class=\"think-card\">\n<div style=\"font-size:48px;margin-bottom:12px\">🤔</div>\n<div>最后留给大家一个思考题：除了辗转相除法，还有一种更原始的方法叫枚举法，就是从1开始一个一个试，找到能同时整除两个数的最大值。辗转相除法和枚举法哪个更快？如果是很大的数，比如100000和99999，你能感受到它们的区别吗？下一节课我们要学习质因数分解，敬请期待！</div>\n</div>"
+    }
+  ]
+}

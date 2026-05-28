@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSP 助手 - AI 设置</title>
+  <link rel="stylesheet" href="./options.css">
+  <style>
+    :root {
+      --p: #4f46e5; --ph: #4338ca; --pl: #eef2ff;
+      --s: #10b981; --e: #ef4444; --w: #f59e0b;
+      --bg: #f1f5f9; --card: #fff; --b: #e2e8f0;
+      --t: #0f172a; --t2: #64748b; --t3: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg); color: var(--t);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .page { width: 100%; max-width: 480px; }
+    .page-header { text-align: center; margin-bottom: 24px; }
+    .page-header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .page-header p { font-size: 13px; color: var(--t2); margin-top: 4px; }
+
+    .card {
+      background: var(--card); border: 1px solid var(--b); border-radius: 12px;
+      padding: 20px; margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card-title {
+      font-size: 13px; font-weight: 700; color: var(--t); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .card-title::before { content: ''; width: 3px; height: 14px; background: var(--p); border-radius: 2px; }
+
+    /* Providers */
+    .providers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .provider-card {
+      border: 2px solid var(--b); border-radius: 10px; padding: 12px;
+      cursor: pointer; transition: all 0.15s; position: relative;
+    }
+    .provider-card:hover { border-color: #c7d2fe; background: #fafaff; }
+    .provider-card.selected { border-color: var(--p); background: var(--pl); }
+    .provider-card input { position: absolute; opacity: 0; }
+    .provider-card .name { font-size: 14px; font-weight: 700; display: block; }
+    .provider-card .desc { font-size: 11px; color: var(--t3); margin-top: 2px; display: block; }
+    .provider-card.selected .name { color: var(--p); }
+
+    /* Input */
+    .input-wrap { display: flex; gap: 8px; }
+    .input-wrap input {
+      flex: 1; padding: 10px 14px; font-size: 13px; font-family: 'SF Mono', Monaco, monospace;
+      border: 1.5px solid var(--b); border-radius: 8px; outline: none; background: #fafafa;
+      transition: border-color 0.15s;
+    }
+    .input-wrap input:focus { border-color: var(--p); background: #fff; }
+    .input-wrap input::placeholder { color: var(--t3); }
+    .btn-ghost {
+      padding: 10px 14px; font-size: 13px; background: var(--bg);
+      border: 1.5px solid var(--b); border-radius: 8px; cursor: pointer; white-space: nowrap;
+      color: var(--t2); transition: all 0.15s;
+    }
+    .btn-ghost:hover { background: #e2e8f0; }
+
+    .hint { font-size: 11px; color: var(--t3); margin-top: 8px; }
+
+    /* Buttons */
+    .actions { display: flex; gap: 10px; }
+    .btn {
+      padding: 11px 20px; font-size: 14px; font-weight: 600; border-radius: 8px;
+      cursor: pointer; border: none; transition: all 0.15s; text-align: center;
+    }
+    .btn-primary { flex: 1; background: var(--p); color: #fff; }
+    .btn-primary:hover { background: var(--ph); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+    .btn-outline { background: #fff; color: var(--p); border: 1.5px solid var(--p); }
+    .btn-outline:hover { background: var(--pl); }
+
+    /* Status */
+    .status {
+      font-size: 12px; margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      display: none; font-weight: 500;
+    }
+    .status.show { display: block; }
+    .status.success { background: #f0fdf4; color: #16a34a; }
+    .status.error { background: #fef2f2; color: #dc2626; }
+    .status.info { background: #eff6ff; color: #3b82f6; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      z-index: 999; animation: up 0.25s ease;
+      background: #0f172a; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    @keyframes up { from { opacity: 0; transform: translateX(-50%) translateY(12px); } }
+
+    .footer { text-align: center; font-size: 11px; color: var(--t3); margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="page-header">
+      <h1>AI 服务设置</h1>
+      <p>配置后可使用代码 Debug 和智能对话功能</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">选择服务商</div>
+      <div class="providers">
+        <label class="provider-card selected">
+          <input type="radio" name="provider" value="deepseek" checked>
+          <span class="name">DeepSeek</span>
+          <span class="desc">国产大模型，代码能力强</span>
+        </label>
+        <label class="provider-card">
+          <input type="radio" name="provider" value="siliconflow">
+          <span class="name">硅基流动</span>
+          <span class="desc">DeepSeek-V3 免费</span>
+        </label>
+        <label class="provider-card">
+          <input type="radio" name="provider" value="dashscope">
+          <span class="name">阿里百炼</span>
+          <span class="desc">通义千问系列</span>
+        </label>
+        <label class="provider-card">
+          <input type="radio" name="provider" value="zhipu">
+          <span class="name">智谱 AI</span>
+          <span class="desc">GLM-4 国产大模型</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">API Key</div>
+      <div class="input-wrap">
+        <input type="password" id="apiKey" placeholder="粘贴 API Key（sk-...）">
+        <button class="btn-ghost" id="toggleKey">显示</button>
+      </div>
+      <p class="hint">Key 仅存储在本地浏览器，不上传任何服务器</p>
+    </div>
+
+    <div class="card" id="modelCard" style="display:none">
+      <div class="card-title">模型选择</div>
+      <select id="modelSelect" style="width:100%;padding:10px 14px;font-size:13px;border:1.5px solid var(--b);border-radius:8px;background:#fafafa;outline:none;"></select>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔊 动画语音</div>
+      <select id="ttsVoice" style="width:100%;padding:10px 14px;font-size:13px;border:1.5px solid var(--b);border-radius:8px;background:#fafafa;outline:none;">
+        <option value="browser">浏览器默认</option>
+      </select>
+      <p class="hint" style="margin-top:6px;">使用浏览器内置语音，音色可播放器中切换</p>
+    </div>
+
+    <div class="card">
+      <div class="actions">
+        <button class="btn btn-outline" id="testBtn">测试连接</button>
+        <button class="btn btn-primary" id="saveBtn">保存设置</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <p class="footer">配置后教练和学生版均生效</p>
+  </div>
+
+  <script type="module" src="./options.js"></script>
+</body>
+</html>

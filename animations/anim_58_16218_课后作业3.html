@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>16218-课后作业3</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">16218-课后作业3</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>16218-课后作业3</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题意</h2><p>有 <span style='color:#FF6B6B; font-weight:bold;'>n</span> 个人在排队接水，每个人接水需要的时间不同。我们要安排一个接水顺序，让 <span style='color:#4ECDC4; font-weight:bold;'>所有人的等待时间加起来最少</span>。</p><div style='display:flex; gap:10px; margin-top:10px;'><span style='background:#FFE66D; padding:8px 12px; border-radius:8px;'>👤1号 3分钟</span><span style='background:#95E1D3; padding:8px 12px; border-radius:8px;'>👤2号 1分钟</span><span style='background:#F38181; padding:8px 12px; border-radius:8px;'>👤3号 2分钟</span></div><p style='margin-top:10px;'>比如3个人，时间分别是 <span style='color:#FF6B6B;'>3</span>、<span style='color:#4ECDC4;'>1</span>、<span style='color:#95E1D3;'>2</span> 分钟，怎么排最好呢？</p>","narration":"第一步，理解题意。有n个人在排队接水，每个人接水需要的时间不一样。我们要找出一个顺序，让所有人等待的总时间最少。比如三个人，时间分别是3分钟、1分钟和2分钟，我们要想想怎么排才最省时间。"},{"html":"<h2>第二步：算法思路</h2><p>要想总等待时间最少，就要让 <span style='color:#FF6B6B; font-weight:bold;'>接水快的人先接</span>！因为如果慢的人在前面，后面所有人都会等他很久。</p><div style='display:flex; gap:10px; margin-top:10px; align-items:center;'><span style='background:#95E1D3; padding:8px 12px; border-radius:8px;'>👤2号 1分钟</span><span style='font-size:24px;'>→</span><span style='background:#F38181; padding:8px 12px; border-radius:8px;'>👤3号 2分钟</span><span style='font-size:24px;'>→</span><span style='background:#FFE66D; padding:8px 12px; border-radius:8px;'>👤1号 3分钟</span></div><p style='margin-top:10px;'>按时间从小到大排序：<span style='color:#4ECDC4;'>1分钟</span> → <span style='color:#95E1D3;'>2分钟</span> → <span style='color:#FF6B6B;'>3分钟</span></p>","narration":"第二步，算法思路。要想总等待时间最少，就要让接水快的人先接水。如果慢的人在前面，后面所有人都会等他很久。所以我们要按接水时间从小到大排序，时间最短的排在最前面。"},{"html":"<h2>第三步：计算等待时间</h2><p>每个人等待的时间 = 前面所有人接水时间的总和。</p><div style='display:flex; flex-direction:column; gap:8px; margin-top:10px;'><div><span style='background:#95E1D3; padding:6px 10px; border-radius:6px;'>👤2号</span> 等待 <span style='color:#FF6B6B; font-weight:bold;'>0</span> 分钟（前面没人）</div><div><span style='background:#F38181; padding:6px 10px; border-radius:6px;'>👤3号</span> 等待 <span style='color:#FF6B6B; font-weight:bold;'>1</span> 分钟（等2号接完）</div><div><span style='background:#FFE66D; padding:6px 10px; border-radius:6px;'>👤1号</span> 等待 <span style='color:#FF6B6B; font-weight:bold;'>1+2=3</span> 分钟（等2号和3号接完）</div></div><p style='margin-top:10px;'>总等待时间 = 0 + 1 + 3 = <span style='color:#FF6B6B; font-weight:bold;'>4</span> 分钟</p>","narration":"第三步，计算每个人的等待时间。第一个人不用等，第二个人要等第一个人接完，第三个人要等前两个人接完。比如按1分钟、2分钟、3分钟的顺序，等待时间分别是0、1、3分钟，加起来总等待时间是4分钟。"},{"html":"<h2>第四步：计算平均等待时间</h2><p>平均等待时间 = 总等待时间 ÷ 人数</p><div style='display:flex; gap:15px; margin-top:10px; align-items:center;'><span style='background:#4ECDC4; padding:10px 15px; border-radius:10px; font-size:20px;'>总等待时间：4分钟</span><span style='font-size:30px;'>÷</span><span style='background:#FFE66D; padding:10px 15px; border-radius:10px; font-size:20px;'>人数：3人</span><span style='font-size:30px;'>=</span><span style='background:#FF6B6B; padding:10px 15px; border-radius:10px; font-size:20px; font-weight:bold;'>1.33分钟</span></div><p style='margin-top:10px;'>这就是最优方案的平均等待时间！</p>","narration":"第四步，计算平均等待时间。把总等待时间除以人数，就得到平均每个人要等多久。刚才总等待时间是4分钟，有3个人，平均等待时间就是4除以3，约等于1.33分钟。这就是最优方案的平均等待时间。"},{"html":"<h2>第五步：总结规律</h2><p>记住这个重要规律：<span style='color:#FF6B6B; font-weight:bold;'>接水时间短的先接</span>，总等待时间最少！</p><div style='display:flex; gap:10px; margin-top:10px; justify-content:center;'><span style='background:#95E1D3; padding:8px 12px; border-radius:8px;'>⏱️短时间先</span><span style='font-size:24px;'>→</span><span style='background:#F38181; padding:8px 12px; border-radius:8px;'>⏱️中等时间</span><span style='font-size:24px;'>→</span><span style='background:#FFE66D; padding:8px 12px; border-radius:8px;'>⏱️长时间后</span></div><p style='margin-top:10px;'>这样每个人等待的时间最少，总等待时间也最少。</p>","narration":"第五步，总结规律。记住这个重要的规律：接水时间短的人先接，这样总等待时间最少。就像排队买东西一样，买得快的人先买，后面的人就不用等太久。这就是我们解决这个问题的关键思路。"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

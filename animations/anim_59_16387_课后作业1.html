@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>16387-课后作业1</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">16387-课后作业1</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>16387-课后作业1</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题目</h2><p>我们有一个数字组成的<span style='color:#FF6B6B; font-weight:bold;'>字符串</span>，比如 <span style='color:#4ECDC4; font-size:20px;'>'1 4 3 2 5'</span>。</p><p>现在要<span style='color:#FFD93D; font-weight:bold;'>删掉 k 个数字</span>，让剩下的数字组成的数<span style='color:#6BCB77; font-weight:bold;'>最小</span>。</p><p>比如：<span style='color:#4ECDC4;'>'14325'</span> 删掉 2 个数字，变成 <span style='color:#FF6B6B;'>'125'</span> 就比 <span style='color:#999;'>'143'</span> 小。</p>","narration":"第一步，理解题目。我们有一个数字串，要删掉指定数量的数字，让剩下的数字组成最小的数。比如14325删掉两个数字，变成125就比143小。"},{"html":"<h2>第二步：算法思路</h2><p>我们要<span style='color:#FF6B6B; font-weight:bold;'>从左到右</span>看数字，如果发现<span style='color:#FFD93D;'>左边的数字比右边小</span>，就删掉左边的那个！</p><p>比如：<span style='color:#4ECDC4;'>1 4 3 2 5</span> → 看到 <span style='color:#FF6B6B;'>1</span> 比 <span style='color:#6BCB77;'>4</span> 小，就删掉 <span style='color:#FF6B6B;'>1</span>？不对！</p><p>其实是：看到 <span style='color:#FF6B6B;'>4</span> 比 <span style='color:#6BCB77;'>3</span> 大，所以删掉 <span style='color:#FF6B6B;'>4</span>，变成 <span style='color:#4ECDC4;'>1 3 2 5</span>。</p>","narration":"第二步，算法思路。我们从左到右看数字，如果发现左边的数字比右边小，就删掉左边的那个。比如14325中，4比3大，所以删掉4，变成1325。"},{"html":"<h2>第三步：重复删除</h2><p>继续重复上面的操作，直到删够 k 个数字。</p><p>比如：<span style='color:#4ECDC4;'>1 3 2 5</span> → 看到 <span style='color:#FF6B6B;'>3</span> 比 <span style='color:#6BCB77;'>2</span> 大，删掉 <span style='color:#FF6B6B;'>3</span>，变成 <span style='color:#4ECDC4;'>1 2 5</span>。</p><p>如果删够了 k 个，就停止。如果没删够，但已经<span style='color:#FFD93D;'>没有左边比右边小</span>的情况了，就<span style='color:#FF6B6B;'>从末尾删</span>。</p>","narration":"第三步，重复删除。继续找左边比右边大的数字删掉，直到删够k个。如果找不到这样的数字了，就从末尾删。"},{"html":"<h2>第四步：处理前导零</h2><p>删完后，数字串前面可能有 <span style='color:#FF6B6B;'>0</span>，比如 <span style='color:#4ECDC4;'>'0 0 1 2 5'</span>。</p><p>我们要把开头的 <span style='color:#FF6B6B;'>0</span> 都删掉，变成 <span style='color:#6BCB77;'>'1 2 5'</span>。</p><p>但如果只剩一个 <span style='color:#FF6B6B;'>0</span> 了，就保留它。</p>","narration":"第四步，处理前导零。删完数字后，如果开头有0，就把它们都删掉，除非只剩一个0了。"},{"html":"<h2>第五步：输出结果</h2><p>最后剩下的数字串就是<span style='color:#FF6B6B; font-weight:bold;'>最小的数</span>啦！</p><p>比如：<span style='color:#4ECDC4;'>'1 4 3 2 5'</span> 删掉 2 个数字 → <span style='color:#6BCB77; font-size:24px;'>'1 2 5'</span> ✅</p><p>再试试：<span style='color:#4ECDC4;'>'1 0 2 0 0'</span> 删掉 1 个数字 → 先删 <span style='color:#FF6B6B;'>1</span>（因为1比0小），变成 <span style='color:#6BCB77;'>'0 2 0 0'</span>，再去掉前导0 → <span style='color:#6BCB77; font-size:24px;'>'2 0 0'</span> ✅</p>","narration":"第五步，输出结果。最后剩下的数字串就是最小的数啦！比如14325删掉两个数字得到125，就是最小的结果。"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

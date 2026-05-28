@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>16699-课后拓展-求约数个数</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">16699-课后拓展-求约数个数</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>16699-课后拓展-求约数个数</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解问题</h2><p>我们要计算<span style='color:#FF6B6B; font-weight:bold;'>多个数相乘</span>的<span style='color:#4ECDC4; font-weight:bold;'>约数个数</span>。</p><p>比如：<span style='display:inline-block; background:#FFE66D; padding:5px 10px; border-radius:5px;'>2 × 3 × 4</span> 的约数个数是多少？</p><p>先看一个数：<span style='color:#95E1D3;'>12的约数有1,2,3,4,6,12共6个</span></p><p>那多个数乘起来，约数个数怎么算呢？</p>","narration":"第一步，理解问题。我们要计算很多个数乘在一起，这个乘积有多少个约数。比如2乘3乘4等于24，24的约数有1,2,3,4,6,8,12,24共8个。那如果数更多更大，怎么快速算出来呢？"},{"html":"<h2>第二步：分解质因数</h2><p>每个数都可以写成<span style='color:#FF6B6B; font-weight:bold;'>质因数</span>的乘积形式。</p><p><span style='display:inline-block; background:#E8F5E9; padding:5px 10px; border-radius:5px;'>12 = 2² × 3¹</span></p><p>我们用<span style='color:#4ECDC4;'>不同颜色的小方块</span>表示不同的质因数：</p><p><span style='display:inline-block; background:#FF6B6B; color:white; padding:3px 8px; border-radius:3px;'>2</span> 出现2次，<span style='display:inline-block; background:#4ECDC4; color:white; padding:3px 8px; border-radius:3px;'>3</span> 出现1次</p><p>把所有数的质因数都<span style='color:#FFE66D; font-weight:bold;'>收集</span>起来，统计每个质因数总共出现了多少次。</p>","narration":"第二步，分解质因数。每个数都可以拆成质数相乘的形式，比如12等于2的平方乘3。我们要把每个数都这样拆开，然后统计每个质数一共出现了多少次。就像收集不同颜色的小球一样，把相同颜色的球放在一起数一数。"},{"html":"<h2>第三步：约数个数公式</h2><p>如果乘积 = <span style='color:#FF6B6B;'>2</span><sup style='color:#FF6B6B;'>a</sup> × <span style='color:#4ECDC4;'>3</span><sup style='color:#4ECDC4;'>b</sup> × <span style='color:#FFE66D;'>5</span><sup style='color:#FFE66D;'>c</sup> × ...</p><p>那么约数个数 = <span style='color:#FF6B6B;'>(a+1)</span> × <span style='color:#4ECDC4;'>(b+1)</span> × <span style='color:#FFE66D;'>(c+1)</span> × ...</p><p><span style='display:inline-block; background:#E3F2FD; padding:8px 15px; border-radius:8px;'>比如：2³ × 3²，约数个数 = (3+1)×(2+1) = 4×3 = 12</span></p><p>每个质因数的指数加1，再乘起来！</p>","narration":"第三步，学习约数个数的公式。如果乘积等于2的a次方乘3的b次方乘5的c次方等等，那么约数个数就等于a加1乘以b加1乘以c加1再乘下去。比如2的3次方乘3的2次方，约数个数就是4乘3等于12个。这个公式很神奇吧！"},{"html":"<h2>第四步：动手算一算</h2><p>我们来算 <span style='display:inline-block; background:#FFF3E0; padding:5px 10px; border-radius:5px;'>6 × 10 × 15</span></p><p>第一步：分解每个数</p><p><span style='color:#FF6B6B;'>6 = 2 × 3</span>，<span style='color:#4ECDC4;'>10 = 2 × 5</span>，<span style='color:#FFE66D;'>15 = 3 × 5</span></p><p>第二步：统计总指数</p><p><span style='display:inline-block; background:#FF6B6B; color:white; padding:3px 8px; border-radius:3px;'>2</span> 出现2次，<span style='display:inline-block; background:#4ECDC4; color:white; padding:3px 8px; border-radius:3px;'>3</span> 出现2次，<span style='display:inline-block; background:#FFE66D; color:white; padding:3px 8px; border-radius:3px;'>5</span> 出现2次</p><p>第三步：套公式 (2+1)×(2+1)×(2+1) = 3×3×3 = 27</p>","narration":"第四步，我们来动手算一算。比如6乘10乘15，先把每个数分解：6等于2乘3，10等于2乘5，15等于3乘5。然后统计每个质数出现的次数，2出现2次，3出现2次，5出现2次。最后套公式，2加1乘2加1乘2加1等于27，所以乘积的约数个数是27个。"},{"html":"<h2>第五步：总结方法</h2><p>计算多个数乘积的约数个数，分三步走：</p><p><span style='display:inline-block; background:#FF6B6B; color:white; padding:5px 12px; border-radius:20px;'>① 分解</span> 每个数拆成质因数</p><p><span style='display:inline-block; background:#4ECDC4; color:white; padding:5px 12px; border-radius:20px;'>② 统计</span> 每个质因数出现的总次数</p><p><span style='display:inline-block; background:#FFE66D; color:black; padding:5px 12px; border-radius:20px;'>③ 计算</span> 每个次数加1再相乘</p><p><span style='color:#95E1D3; font-size:1.2em;'>💡 记住：指数加1，再相乘！</span></p>","narration":"第五步，总结方法。计算多个数乘积的约数个数，只需要三步：第一步，把每个数分解成质因数；第二步，统计每个质因数一共出现了多少次；第三步，把每个次数加1，然后全部乘起来。记住这个口诀：指数加1，再相乘！这样不管有多少个数，我们都能快速算出约数个数啦。"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

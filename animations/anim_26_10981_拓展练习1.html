@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>10981-拓展练习1</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">10981-拓展练习1</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>10981-拓展练习1</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题意</h2><p>我们要输入一句话，这句话里有很多<span style='color:red; font-weight:bold;'>空格</span>。比如：<span style='background:#f0f0f0; padding:4px;'>我  爱  吃  苹果</span></p><p>现在需要把<span style='color:red; font-weight:bold;'>连续多个空格</span>变成<span style='color:blue; font-weight:bold;'>一个空格</span>，就像这样：<span style='background:#f0f0f0; padding:4px;'>我爱吃苹果</span>（注意：单词之间只留一个空格）</p>","narration":"第一步，理解题意。我们要把一句话里连续的好几个空格，变成一个空格。比如“我  爱  吃  苹果”要变成“我爱吃苹果”，单词之间只留一个空格。"},{"html":"<h2>第二步：准备一个“小旗子”</h2><p>我们需要一个<span style='color:orange; font-weight:bold;'>小旗子</span>（标记），来记住<span style='color:red;'>上一个字符是不是空格</span>。</p><p>小旗子一开始是<span style='color:green;'>绿色（表示可以输出空格）</span>。当我们遇到空格时，先看看小旗子：</p><ul><li>如果小旗子是绿色，就输出这个空格，然后把小旗子变成<span style='color:red;'>红色（表示不能再输出空格了）</span></li><li>如果小旗子是红色，就跳过这个空格（不输出）</li></ul><p>当我们遇到<span style='color:blue;'>不是空格的字符</span>时，就输出它，并且把小旗子变回<span style='color:green;'>绿色</span>。</p>","narration":"第二步，准备一个小旗子。小旗子用来记住上一个字符是不是空格。一开始小旗子是绿色，表示可以输出空格。遇到空格时，如果小旗子是绿色就输出空格，然后变成红色；如果已经是红色就跳过。遇到其他字符就输出，并把小旗子变回绿色。"},{"html":"<h2>第三步：开始扫描句子</h2><p>我们一个字符一个字符地看这句话：</p><p><span style='background:#e0ffe0; padding:4px;'>我</span> <span style='background:#ffe0e0; padding:4px;'>空格</span> <span style='background:#ffe0e0; padding:4px;'>空格</span> <span style='background:#e0ffe0; padding:4px;'>爱</span> <span style='background:#ffe0e0; padding:4px;'>空格</span> <span style='background:#ffe0e0; padding:4px;'>空格</span> <span style='background:#e0ffe0; padding:4px;'>吃</span></p><p>小旗子一开始是<span style='color:green;'>绿色</span>。</p><ul><li>看到“我” → 输出“我”，小旗子变绿色</li><li>看到第一个空格 → 小旗子是绿色，输出空格，小旗子变红色</li><li>看到第二个空格 → 小旗子是红色，跳过（不输出）</li><li>看到“爱” → 输出“爱”，小旗子变绿色</li><li>看到第一个空格 → 小旗子是绿色，输出空格，小旗子变红色</li><li>看到第二个空格 → 小旗子是红色，跳过</li><li>看到“吃” → 输出“吃”，小旗子变绿色</li></ul><p>最后得到：<span style='background:#f0f0f0; padding:4px;'>我 爱 吃</span>（中间只有一个空格）</p>","narration":"第三步，开始扫描句子。我们一个字符一个字符地看，遇到字符就输出，遇到空格时根据小旗子的颜色决定是否输出。这样连续的空格就只会输出第一个，后面的都被跳过了。"},{"html":"<h2>第四步：看看完整效果</h2><p>输入：<span style='background:#f0f0f0; padding:4px;'>我  爱  吃  苹果</span></p><p>处理过程：</p><p><span style='color:green;'>小旗子：绿色</span> → 看到“我”输出 → <span style='color:red;'>小旗子：红色</span>（遇到第一个空格输出）→ 跳过第二个空格 → <span style='color:green;'>小旗子：绿色</span>（看到“爱”输出）→ <span style='color:red;'>小旗子：红色</span>（遇到第一个空格输出）→ 跳过第二个空格 → ...</p><p>最终输出：<span style='background:#f0f0f0; padding:4px;'>我爱吃苹果</span></p><p>注意：如果句子开头或结尾有空格，也会被正确处理哦！</p>","narration":"第四步，看看完整效果。输入“我  爱  吃  苹果”，经过小旗子的帮忙，连续的空格只保留一个，最后输出“我爱吃苹果”。这样句子看起来就整洁多了！"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

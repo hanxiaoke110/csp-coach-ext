@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>13130-拓展练习1</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">13130-拓展练习1</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>13130-拓展练习1</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题意</h2><p>我们要把一段<span style='color:#2196F3; font-weight:bold;'>英文句子</span>变成<span style='color:#FF5722; font-weight:bold;'>加密的密文</span>！</p><p>比如：把 <span style='background:#FFEB3B; padding:2px 6px; border-radius:4px;'>HELLO</span> 每个字母向后移动3位，就变成 <span style='background:#4CAF50; color:white; padding:2px 6px; border-radius:4px;'>KHOOR</span></p><p>注意：<span style='color:#E91E63;'>空格和标点符号</span>保持不变哦！</p>","narration":"第一步，理解题意。我们要把一段英文句子中的每个字母，按照给定的数字向后移动，变成加密后的密文。比如A变成D，B变成E，但空格和标点符号不改变。"},{"html":"<h2>第二步：认识字母表</h2><p>字母就像<span style='color:#9C27B0; font-weight:bold;'>一个圆环</span>！</p><p><span style='display:inline-block; background:#E3F2FD; padding:8px; border-radius:8px;'>A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</span></p><p>如果从Z再往后走，就<span style='color:#FF9800; font-weight:bold;'>回到A</span>，就像<span style='color:#4CAF50;'>时钟转了一圈</span>一样。</p>","narration":"第二步，认识字母表。字母就像一个大圆环，从A到Z排成一圈。如果从Z再往后走一步，就会回到A，就像时钟的指针转了一圈。"},{"html":"<h2>第三步：处理大写字母</h2><p>遇到大写字母，比如 <span style='background:#FF5722; color:white; padding:4px 8px; border-radius:4px;'>H</span>，要向后移动n位。</p><p><span style='display:inline-block; background:#FFF3E0; padding:6px; border-radius:6px;'>A(0) B(1) C(2) ... H(7) ... Z(25)</span></p><p>H的位置是7，移动3位：7+3=10，对应 <span style='background:#4CAF50; color:white; padding:4px 8px; border-radius:4px;'>K</span></p><p>如果超过Z，比如Y(24)移动3位：24+3=27，27-26=1，对应 <span style='background:#4CAF50; color:white; padding:4px 8px; border-radius:4px;'>B</span></p>","narration":"第三步，处理大写字母。每个大写字母都有一个数字位置，A是0，B是1，一直到Z是25。我们要把这个数字加上移动的位数，如果超过25，就减去26，回到开头。"},{"html":"<h2>第四步：处理小写字母</h2><p>小写字母也是一样的道理！</p><p><span style='display:inline-block; background:#E8F5E9; padding:6px; border-radius:6px;'>a(0) b(1) c(2) ... h(7) ... z(25)</span></p><p>比如 <span style='background:#FF5722; color:white; padding:4px 8px; border-radius:4px;'>h</span> 的位置是7，移动3位变成 <span style='background:#4CAF50; color:white; padding:4px 8px; border-radius:4px;'>k</span></p><p>如果 <span style='background:#FF5722; color:white; padding:4px 8px; border-radius:4px;'>z</span> 移动3位：25+3=28，28-26=2，变成 <span style='background:#4CAF50; color:white; padding:4px 8px; border-radius:4px;'>c</span></p>","narration":"第四步，处理小写字母。小写字母和大写字母的规则完全一样，也是从a是0到z是25，加上移动的位数，如果超过25就减去26。"},{"html":"<h2>第五步：处理负数</h2><p>如果移动的位数是<span style='color:#E91E63; font-weight:bold;'>负数</span>怎么办？</p><p>比如移动 <span style='background:#FF5722; color:white; padding:4px 8px; border-radius:4px;'>-3</span> 位，其实就是向后移动 <span style='background:#4CAF50; color:white; padding:4px 8px; border-radius:4px;'>3</span> 位！</p><p><span style='display:inline-block; background:#FFF9C4; padding:6px; border-radius:6px;'>因为 -(-3) = 3，我们取它的绝对值</span></p><p>所以无论给正数还是负数，我们都<span style='color:#2196F3; font-weight:bold;'>只向后移动</span>。</p>","narration":"第五步，处理负数。如果给的移动数字是负数，比如负3，我们就把它变成正3。因为向后移动负3位，其实就是向后移动3位，我们取它的绝对值就好了。"},{"html":"<h2>第六步：完整示例</h2><p>让我们加密 <span style='background:#FFEB3B; padding:4px 8px; border-radius:4px;'>Hello World!</span> 移动3位：</p><p><span style='display:inline-block; background:#E3F2FD; padding:8px; border-radius:8px;'>H→K  e→h  l→o  l→o  o→r  空格不变  W→Z  o→r  r→u  l→o  d→g  !不变</span></p><p>结果：<span style='background:#4CAF50; color:white; padding:6px 12px; border-radius:6px; font-size:1.2em;'>Khoor Zruog!</span></p><p><span style='color:#E91E63;'>空格和感叹号</span>都保持原样！</p>","narration":"第六步，完整示例。比如加密Hello World!，移动3位。H变成K，e变成h，l变成o，o变成r，空格不变，W变成Z，o变成r，r变成u，l变成o，d变成g，感叹号不变。最后得到Khoor Zruog! 这就是加密后的密文。"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSP 助手 - 教练版</title>
+  <link rel="stylesheet" href="./sidepanel.css">
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+    body { display: flex; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fff; }
+    #headerContainer { flex-shrink: 0; }
+    #mainContainer { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .loading-state { display: flex; align-items: center; justify-content: center; height: 100%; color: #888; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div id="headerContainer">
+    <div class="coach-header">
+      <span class="header-title">🎓 CSP 教练助手</span>
+      <button class="header-settings-btn" id="settingsBtn">⚙ AI 服务设置</button>
+    </div>
+  </div>
+
+  <div id="mainContainer">
+    <div class="library-toolbar">
+      <button class="course-mgr-btn" id="courseMgrBtn">+ 课程管理</button>
+      <button class="import-btn" id="importBtn">📥 导入</button>
+      <button class="import-btn" id="exportBtn">📤 导出</button>
+      <button class="import-btn" id="excCodeBtn">⭐ 优秀码</button>
+      <button class="import-btn" id="campCodeBtn">🏕️ 集训码</button>
+      <input type="file" id="importFile" accept=".zip,.json" style="display:none">
+    </div>
+    <div class="library-body">
+      <div class="problem-detail" id="libDetail">
+        <div class="loading-state">正在加载题库...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <!-- Excellence Code Modal -->
+  <div id="excCodeModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:16px;padding:24px;max-width:500px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.15)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <span style="font-weight:700;font-size:16px">⭐ 优秀学生奖励码</span>
+        <button id="excCodeClose" style="background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8">&times;</button>
+      </div>
+        <div style="display:flex;gap:12px;align-items:end;margin-bottom:16px">
+          <div style="flex:1">
+            <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">奖励等级</label>
+            <select id="excLevel" style="width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+              <option value="1">🥇 一等奖 (+100EXP +60金币)</option>
+              <option value="2">🥈 二等奖 (+60EXP +40金币)</option>
+              <option value="3">🥉 三等奖 (+30EXP +20金币)</option>
+            </select>
+          </div>
+          <div style="flex:1">
+            <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">数量</label>
+            <input type="number" id="excCount" value="1" min="1" max="20" style="width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+          </div>
+          <button id="excGenerate" style="padding:8px 20px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap">🎲 生成</button>
+        </div>
+        <div id="excResult" style="display:none">
+          <div style="font-weight:600;margin-bottom:8px" id="excResultTitle"></div>
+          <div id="excCodes" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px"></div>
+          <button id="excCopyAll" style="padding:6px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:12px">📋 复制全部</button>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:#f8fafc;border-radius:8px;font-size:12px;color:#64748b;line-height:1.6">
+          <strong>📋 格式：</strong>EXC-{等级}-{日期}-{校验码}<br>
+          码内含校验位，学生无法伪造。在桌宠App侧边栏"神秘代码"中输入领取。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Training Camp Code Modal -->
+  <div id="campCodeModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:16px;padding:24px;max-width:500px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.15)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <span style="font-weight:700;font-size:16px">🏕️ 集训激活码</span>
+        <button id="campCodeClose" style="background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8">&times;</button>
+      </div>
+      <div style="margin-bottom:16px">
+        <p style="font-size:13px;color:#64748b;margin:0 0 12px 0">生成集训激活码，发给学生后在桌面端「设置 → 集训模式」中输入，即可开启 12 天集训（所有奖励 ×1.5，每日额外 3 份食物）。</p>
+        <button id="campGenerate" style="padding:10px 24px;background:#f59e0b;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px">🎲 生成新激活码</button>
+      </div>
+      <div id="campResult" style="display:none">
+        <div style="font-weight:600;margin-bottom:8px">🏕️ 新生成的集训激活码</div>
+        <div id="campCodes" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px"></div>
+        <button id="campCopyAll" style="padding:6px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:12px">📋 复制全部</button>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#fef9c3;border-radius:8px;font-size:12px;color:#92400e;line-height:1.6">
+        <strong>📋 格式：</strong>CAMP-{日期}-{校验码}<br>
+        激活后 12 天内生效。每个码可多人使用。如发现滥用，重新生成新码即可。
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/highlight.min.js"></script>
+  <script src="../lib/highlight-cpp.min.js"></script>
+  <script src="../lib/jszip.min.js"></script>
+  <script type="module" src="./sidepanel.js"></script>
+</body>
+</html>

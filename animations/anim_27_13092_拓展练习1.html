@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>13092-拓展练习1</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">13092-拓展练习1</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>13092-拓展练习1</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题目</h2><p>今天我们要玩一个“找唯一”的游戏！</p><p>给你一串字母和符号组成的字符串，比如：<span style='background:#FFD700; padding:4px 8px; border-radius:5px; font-size:20px;'>a b c a d b</span></p><p>我们要找出那些<span style='color:red; font-weight:bold;'>只出现一次</span>的字符，按<span style='color:blue;'>字母表顺序</span>排好队输出。</p><p>比如上面这个字符串中：<br>👉 <span style='background:#90EE90; padding:3px 6px;'>c</span> 出现1次，<span style='background:#90EE90; padding:3px 6px;'>d</span> 出现1次<br>👉 按顺序输出：<span style='background:#87CEEB; padding:4px 8px; border-radius:5px; font-size:18px;'>c d</span></p>","narration":"第一步，理解题目。我们要在一串字符中，找到那些只出现一次的小家伙，然后按照字母表的顺序把它们排好输出。就像在玩具堆里找出独一无二的玩具一样！"},{"html":"<h2>第二步：准备统计工具</h2><p>我们需要一个<span style='background:#FFB6C1; padding:3px 6px; border-radius:3px;'>计数表</span>，就像每个字符有一个小格子，用来记录它出现了几次。</p><p>想象有128个彩色小格子，每个格子对应一个字符（比如字母a、b、c…还有空格、标点符号）。</p><div style='display:flex; flex-wrap:wrap; gap:3px; margin:10px 0;'>","narration":"第二步，准备统计工具。我们需要一个计数器，就像每个字符有自己的小盒子，用来放它出现的次数。一开始所有盒子里都是空的，也就是0次。"},{"html":"<h2>第三步：逐个字符统计</h2><p>现在我们开始扫描字符串，每看到一个字符，就在它对应的<span style='background:#FFA07A; padding:3px 6px; border-radius:3px;'>小盒子里加1</span>。</p><p>比如字符串：<span style='background:#FFFACD; padding:4px 8px; border-radius:5px; font-size:18px;'>a b c a d b</span></p><div style='display:flex; gap:10px; margin:10px 0;'>","narration":"第三步，开始统计。我们从头到尾看每个字符，每看到一个，就在它的小盒子里放一颗小星星。比如看到a，就在a的盒子里加1，再看到a，再加1。这样最后就知道每个字符出现了几次。"},{"html":"<h2>第四步：找出只出现一次的字符</h2><p>统计完成后，我们来看看每个小盒子里的数字：</p><div style='display:flex; gap:15px; margin:10px 0;'>","narration":"第四步，找出只出现一次的字符。我们检查每个小盒子，如果里面只有1颗小星星，就说明这个字符只出现了一次，它就是我们要找的独一无二的字符！"},{"html":"<h2>第五步：按顺序输出结果</h2><p>最后，我们要把这些<span style='color:green; font-weight:bold;'>独一无二的字符</span>按照<span style='color:blue;'>字母表顺序</span>排好队输出。</p><p>比如找到的字符有：<span style='background:#90EE90; padding:3px 6px;'>c</span> 和 <span style='background:#90EE90; padding:3px 6px;'>d</span></p><p>按顺序排好：<span style='background:#87CEEB; padding:4px 8px; border-radius:5px; font-size:20px;'>c d</span></p><p>注意：第一个字符前面不加空格，后面的字符之间加一个空格哦！</p>","narration":"第五步，按顺序输出结果。我们把找到的独一无二的字符，按照字母表从小到大的顺序排好，然后输出。第一个字符前面不加空格，后面的每个字符前面加一个空格，这样看起来整整齐齐的。"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

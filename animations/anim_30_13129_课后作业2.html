@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>13129-课后作业2</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">13129-课后作业2</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>13129-课后作业2</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：认识加密任务</h2><p>今天我们要当小密码员！把每个字母都变成它的<b>下一个字母</b>，就像排队往后走一步。</p><div style='display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;'> <span style='background:#FFD700;padding:8px 12px;border-radius:8px;font-size:20px;'>a</span> <span style='font-size:24px;color:#FF6347;'>→</span> <span style='background:#98FB98;padding:8px 12px;border-radius:8px;font-size:20px;'>b</span> <span style='margin-left:20px;background:#FFD700;padding:8px 12px;border-radius:8px;font-size:20px;'>b</span> <span style='font-size:24px;color:#FF6347;'>→</span> <span style='background:#98FB98;padding:8px 12px;border-radius:8px;font-size:20px;'>c</span> <span style='margin-left:20px;background:#FFD700;padding:8px 12px;border-radius:8px;font-size:20px;'>y</span> <span style='font-size:24px;color:#FF6347;'>→</span> <span style='background:#98FB98;padding:8px 12px;border-radius:8px;font-size:20px;'>z</span> </div><p style='margin-top:10px;'>但是注意啦！<span style='color:#FF4500;font-weight:bold;'>z</span> 后面没有字母了，所以 <span style='color:#FF4500;font-weight:bold;'>z</span> 要变成 <span style='color:#4169E1;font-weight:bold;'>a</span>，就像转圈圈一样！</p>","narration":"第一步，我们要把每个字母变成它后面的一个字母。比如a变成b，b变成c，y变成z。但是z后面没有字母了，所以z要变回a，就像走了一圈又回到起点。"},{"html":"<h2>第二步：准备字母队列</h2><p>先输入一串字母，比如：<span style='background:#FFE4B5;padding:4px 10px;border-radius:6px;font-size:22px;font-weight:bold;'>cat</span></p><div style='display:flex;gap:8px;margin-top:10px;'> <span style='background:#FFD700;padding:10px 16px;border-radius:10px;font-size:24px;border:2px solid #FF8C00;'>c</span> <span style='background:#FFD700;padding:10px 16px;border-radius:10px;font-size:24px;border:2px solid #FF8C00;'>a</span> <span style='background:#FFD700;padding:10px 16px;border-radius:10px;font-size:24px;border:2px solid #FF8C00;'>t</span> </div><p style='margin-top:8px;'>现在我们要一个一个地处理这些字母，就像排队做游戏！</p>","narration":"第二步，我们先输入一串字母，比如cat。然后我们要一个一个地看这些字母，给每个字母都加一，变成下一个字母。"},{"html":"<h2>第三步：处理第一个字母 c</h2><p>看第一个字母：<span style='background:#FFD700;padding:8px 14px;border-radius:8px;font-size:24px;'>c</span></p><div style='display:flex;align-items:center;gap:10px;margin-top:10px;'> <span style='background:#FFD700;padding:8px 14px;border-radius:8px;font-size:24px;'>c</span> <span style='font-size:28px;color:#FF6347;'>→</span> <span style='background:#98FB98;padding:8px 14px;border-radius:8px;font-size:24px;'>d</span> <span style='font-size:20px;color:#888;margin-left:10px;'>(c+1=d)</span> </div><p>c 不是 z，所以直接变成 <span style='color:#228B22;font-weight:bold;'>d</span>！</p>","narration":"第三步，先看第一个字母c。c不是z，所以直接加一，c就变成了d。"},{"html":"<h2>第四步：处理第二个字母 a</h2><p>轮到第二个字母：<span style='background:#FFD700;padding:8px 14px;border-radius:8px;font-size:24px;'>a</span></p><div style='display:flex;align-items:center;gap:10px;margin-top:10px;'> <span style='background:#FFD700;padding:8px 14px;border-radius:8px;font-size:24px;'>a</span> <span style='font-size:28px;color:#FF6347;'>→</span> <span style='background:#98FB98;padding:8px 14px;border-radius:8px;font-size:24px;'>b</span> <span style='font-size:20px;color:#888;margin-left:10px;'>(a+1=b)</span> </div><p>a 也不是 z，所以变成 <span style='color:#228B22;font-weight:bold;'>b</span>！</p>","narration":"第四步，看第二个字母a。a也不是z，所以加一变成b。"},{"html":"<h2>第五步：处理第三个字母 t</h2><p>最后一个字母：<span style='background:#FFD700;padding:8px 14px;border-radius:8px;font-size:24px;'>t</span></p><div style='display:flex;align-items:center;gap:10px;margin-top:10px;'> <span style='background:#FFD700;padding:8px 14px;border-radius:8px;font-size:24px;'>t</span> <span style='font-size:28px;color:#FF6347;'>→</span> <span style='background:#98FB98;padding:8px 14px;border-radius:8px;font-size:24px;'>u</span> <span style='font-size:20px;color:#888;margin-left:10px;'>(t+1=u)</span> </div><p>t 变成 <span style='color:#228B22;font-weight:bold;'>u</span>！</p>","narration":"第五步，看最后一个字母t。t加一变成u。"},{"html":"<h2>第六步：看看加密结果</h2><p>所有字母都处理完了！原来的 <span style='background:#FFD700;padding:6px 12px;border-radius:6px;font-size:22px;'>cat</span> 变成了：</p><div style='display:flex;gap:8px;margin-top:10px;'> <span style='background:#98FB98;padding:10px 16px;border-radius:10px;font-size:28px;border:2px solid #32CD32;font-weight:bold;'>d</span> <span style='background:#98FB98;padding:10px 16px;border-radius:10px;font-size:28px;border:2px solid #32CD32;font-weight:bold;'>b</span> <span style='background:#98FB98;padding:10px 16px;border-radius:10px;font-size:28px;border:2px solid #32CD32;font-weight:bold;'>u</span> </div><p style='margin-top:8px;'><span style='background:#FFE4B5;padding:4px 12px;border-radius:6px;font-size:24px;font-weight:bold;'>dbu</span> 就是加密后的密码啦！</p><p style='color:#888;font-size:14px;margin-top:5px;'>如果遇到z，它会变成a，就像转圈圈一样哦！</p>","narration":"第六步，我们得到了最终结果。cat变成了dbu。记住，每个字母都往后走了一步，只有z会变成a，因为字母表是个圆圈。这样我们就完成了加密任务！"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

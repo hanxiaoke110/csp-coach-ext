@@ -1,0 +1,11 @@
+node_modules/
+dist-coach/
+dist-student/
+.claude/
+.agents/
+.workbuddy/
+.DS_Store
+*.log
+shared/data/*.bak*
+shared/data/docx-extracts/
+skills-lock.json

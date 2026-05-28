@@ -1,0 +1,24 @@
+{
+  "name": "csp-chrome-ext",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "BUILD_TARGET=coach vite build --watch",
+    "build": "npm run build:coach && npm run build:student",
+    "build:coach": "BUILD_TARGET=coach vite build",
+    "build:student": "BUILD_TARGET=student vite build",
+    "lint": "echo 'TODO: configure eslint' && exit 0",
+    "test": "echo 'TODO: configure vitest' && exit 0",
+    "typecheck": "tsc --noEmit --skipLibCheck || echo 'TODO: configure tsconfig' && exit 0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.279",
+    "vite": "^8.0.11"
+  },
+  "dependencies": {
+    "edge-tts-universal": "^1.4.0",
+    "highlight.js": "^11.11.1",
+    "mammoth": "^1.12.0",
+    "tesseract.js": "^5.1.1"
+  }
+}

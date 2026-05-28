@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>13232-课后作业2</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">13232-课后作业2</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>13232-课后作业2</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题目</h2><p>今天我们要玩一个数字反转游戏！比如输入<strong>102</strong>，我们要把它变成<strong>201</strong>。特别要注意的是，如果数字末尾有0，比如<strong>100</strong>，反转后要变成<strong>001</strong>，也就是保留所有的0哦！</p><p>现在我们有4个数字：<span style='color:#FF6B6B; font-weight:bold; font-size:20px;'>a</span>、<span style='color:#4ECDC4; font-weight:bold; font-size:20px;'>b</span>、<span style='color:#45B7D1; font-weight:bold; font-size:20px;'>c</span>、<span style='color:#96CEB4; font-weight:bold; font-size:20px;'>d</span>，我们要把它们全部反转过来！</p>","narration":"第一步，理解题目。我们要输入四个数字，然后把每个数字倒过来写。比如102变成201，100变成001。记住，末尾的0不能丢，要保留在反转后的最前面哦！"},{"html":"<h2>第二步：数字变字符串</h2><p>怎么反转数字呢？我们先把数字变成一串字符。比如数字<strong>102</strong>，变成字符串就是<span style='color:#FF6B6B; font-weight:bold; font-size:24px;'>'1' '0' '2'</span>。</p><p>看！每个数字都变成了一个单独的<span style='color:#4ECDC4; font-weight:bold;'>字符</span>，就像排队一样：</p><p style='text-align:center; font-size:28px; letter-spacing:10px;'><span style='background:#FF6B6B; color:white; padding:8px 12px; border-radius:8px;'>1</span> <span style='background:#4ECDC4; color:white; padding:8px 12px; border-radius:8px;'>0</span> <span style='background:#45B7D1; color:white; padding:8px 12px; border-radius:8px;'>2</span></p>","narration":"第二步，我们把数字变成字符串。比如数字102，就变成了三个字符：1、0、2。这样我们就可以一个一个地处理它们了。"},{"html":"<h2>第三步：从后往前取字符</h2><p>现在我们要反转啦！从字符串的<span style='color:#FF6B6B; font-weight:bold;'>最后一个字符</span>开始，一个一个往前取：</p><p style='text-align:center; font-size:28px; letter-spacing:10px;'>取第1个：<span style='background:#45B7D1; color:white; padding:8px 12px; border-radius:8px;'>2</span> ← 从最后开始</p><p style='text-align:center; font-size:28px; letter-spacing:10px;'>取第2个：<span style='background:#4ECDC4; color:white; padding:8px 12px; border-radius:8px;'>0</span> ← 再往前</p><p style='text-align:center; font-size:28px; letter-spacing:10px;'>取第3个：<span style='background:#FF6B6B; color:white; padding:8px 12px; border-radius:8px;'>1</span> ← 取到最前面</p>","narration":"第三步，我们从字符串的最后一个字符开始，一个一个往前取。先取2，再取0，最后取1。这样顺序就反过来了！"},{"html":"<h2>第四步：拼成新字符串</h2><p>把取出来的字符按顺序拼在一起：</p><p style='text-align:center; font-size:28px; letter-spacing:10px;'><span style='background:#45B7D1; color:white; padding:8px 12px; border-radius:8px;'>2</span> + <span style='background:#4ECDC4; color:white; padding:8px 12px; border-radius:8px;'>0</span> + <span style='background:#FF6B6B; color:white; padding:8px 12px; border-radius:8px;'>1</span> = <span style='background:#96CEB4; color:white; padding:8px 12px; border-radius:8px; font-weight:bold;'>201</span></p><p>看！我们得到了反转后的字符串<strong>201</strong>。如果原数字是<strong>100</strong>，就会得到<strong>001</strong>，前面的0不会丢失哦！</p>","narration":"第四步，我们把取出来的字符按顺序拼在一起。2、0、1拼起来就是201。这样我们就完成了反转！而且100反转后是001，前面的0都保留着。"},{"html":"<h2>第五步：处理所有数字</h2><p>现在我们要对4个数字都做同样的操作：</p><p style='text-align:center; font-size:24px;'>🔢 <span style='color:#FF6B6B;'>a</span> → 反转 → <span style='color:#FF6B6B;'>a'</span></p><p style='text-align:center; font-size:24px;'>🔢 <span style='color:#4ECDC4;'>b</span> → 反转 → <span style='color:#4ECDC4;'>b'</span></p><p style='text-align:center; font-size:24px;'>🔢 <span style='color:#45B7D1;'>c</span> → 反转 → <span style='color:#45B7D1;'>c'</span></p><p style='text-align:center; font-size:24px;'>🔢 <span style='color:#96CEB4;'>d</span> → 反转 → <span style='color:#96CEB4;'>d'</span></p><p>最后把结果用空格隔开，输出出来！</p>","narration":"第五步，我们对每个数字都做同样的反转操作。a变成a'，b变成b'，c变成c'，d变成d'。最后把四个反转后的结果用空格隔开，输出出来就完成啦！"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

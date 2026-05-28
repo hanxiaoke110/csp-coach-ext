@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>13917-拓展练习 2</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">13917-拓展练习 2</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>13917-拓展练习 2</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：认识二进制数</h2><p>二进制数就像一串由<span style='color:red; font-weight:bold;'>红色0</span>和<span style='color:blue; font-weight:bold;'>蓝色1</span>组成的密码！比如：<span style='background:#f0f0f0; padding:4px 8px; border-radius:4px;'>1 0 1 1</span>。每个位置上的数字只能有0和1两种可能。</p><div style='display:flex; gap:10px; margin-top:10px;'><span style='background:red; color:white; padding:6px 12px; border-radius:6px;'>0</span><span style='background:blue; color:white; padding:6px 12px; border-radius:6px;'>1</span><span style='background:red; color:white; padding:6px 12px; border-radius:6px;'>0</span><span style='background:blue; color:white; padding:6px 12px; border-radius:6px;'>1</span></div>","narration":"第一步，我们来认识二进制数。二进制数只由0和1组成，就像一串红蓝小方块。我们要判断输入的一串数字是不是合法的二进制数，也就是里面只能有0和1，不能有其他数字。"},{"html":"<h2>第二步：检查是否合法</h2><p>我们要像小侦探一样，一个一个检查每个数字。如果发现<span style='color:red; font-weight:bold;'>不是0也不是1</span>的数字，比如<span style='background:#ffe0e0; padding:2px 6px; border-radius:4px;'>2</span>或<span style='background:#ffe0e0; padding:2px 6px; border-radius:4px;'>9</span>，就说明这不是合法的二进制数，要输出<span style='color:red; font-weight:bold;'>false</span>。</p><div style='display:flex; gap:8px; margin-top:10px;'><span style='background:blue; color:white; padding:6px 12px; border-radius:6px;'>1</span><span style='background:red; color:white; padding:6px 12px; border-radius:6px;'>0</span><span style='background:#ff6666; color:white; padding:6px 12px; border-radius:6px;'>2</span><span style='background:blue; color:white; padding:6px 12px; border-radius:6px;'>1</span><span style='font-size:20px;'>❌</span></div>","narration":"第二步，我们要检查每个数字。就像排队检查，如果看到有数字不是0也不是1，比如2或者9，那就说明这串数字不是合法的二进制数，我们要说“false”。"},{"html":"<h2>第三步：从右往左计算</h2><p>如果都是0和1，我们就开始把它变成我们熟悉的十进制数。从最右边开始，每个位置都有一个<span style='color:purple; font-weight:bold;'>小秘密</span>：最右边是1，往左依次是2、4、8……（每次乘以2）。</p><div style='display:flex; gap:8px; margin-top:10px;'><span style='background:#ddd; padding:6px 12px; border-radius:6px;'>8</span><span style='background:#ddd; padding:6px 12px; border-radius:6px;'>4</span><span style='background:#ddd; padding:6px 12px; border-radius:6px;'>2</span><span style='background:#ddd; padding:6px 12px; border-radius:6px;'>1</span><span style='font-size:14px; color:gray;'>← 位置的值</span></div>","narration":"第三步，我们要从右往左看每个位置。最右边代表1，往左一位代表2，再往左代表4，再往左代表8，就像爬楼梯一样，每次乘以2。记住这个规律很重要哦！"},{"html":"<h2>第四步：把1的位置加起来</h2><p>现在看看每个位置上是<span style='color:blue; font-weight:bold;'>1</span>还是<span style='color:red; font-weight:bold;'>0</span>。如果是1，就把这个位置的值加上去；如果是0，就跳过。比如：<span style='background:#f0f0f0; padding:4px 8px; border-radius:4px;'>1 0 1 1</span> 就是 8+0+2+1 = <span style='color:green; font-weight:bold;'>11</span>。</p><div style='display:flex; gap:8px; margin-top:10px;'><span style='background:blue; color:white; padding:6px 12px; border-radius:6px;'>1×8</span><span style='background:red; color:white; padding:6px 12px; border-radius:6px;'>0×4</span><span style='background:blue; color:white; padding:6px 12px; border-radius:6px;'>1×2</span><span style='background:blue; color:white; padding:6px 12px; border-radius:6px;'>1×1</span><span style='font-size:20px;'>→</span><span style='background:green; color:white; padding:6px 12px; border-radius:6px;'>11</span></div>","narration":"第四步，我们把所有是1的位置的值加起来。比如二进制数1011，最左边1代表8，然后是0代表0，再是1代表2，最右边1代表1，加起来就是8+0+2+1=11。这样就把二进制变成了我们熟悉的十进制数啦！"},{"html":"<h2>第五步：输出结果</h2><p>最后，如果输入的是合法二进制数，我们就输出计算得到的<span style='color:green; font-weight:bold;'>十进制数</span>；如果输入不合法，就输出<span style='color:red; font-weight:bold;'>false</span>。大功告成！</p><div style='display:flex; gap:10px; margin-top:10px;'><span style='background:#e0ffe0; padding:6px 12px; border-radius:6px;'>输入: 1011</span><span style='font-size:20px;'>→</span><span style='background:green; color:white; padding:6px 12px; border-radius:6px;'>输出: 11</span></div><div style='display:flex; gap:10px; margin-top:5px;'><span style='background:#ffe0e0; padding:6px 12px; border-radius:6px;'>输入: 1021</span><span style='font-size:20px;'>→</span><span style='background:red; color:white; padding:6px 12px; border-radius:6px;'>输出: false</span></div>","narration":"第五步，我们输出最终结果。如果输入的数字串里只有0和1，就输出它对应的十进制数；如果里面有其他数字，就输出false。这样我们就完成了整个任务，是不是很简单呀？"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

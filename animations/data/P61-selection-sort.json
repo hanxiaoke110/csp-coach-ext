@@ -1,0 +1,70 @@
+{
+  "problemId": "P61-selection-sort",
+  "title": "选择排序",
+  "lessonTitle": "P61-初等排序（一）",
+  "stages": [
+    {
+      "id": 0,
+      "name": "情境引入",
+      "type": "intro",
+      "audioFile": "stage-0.mp3",
+      "narration": "同学们好！今天我们来学习一个非常经典的排序算法——选择排序。想象一下，体育课上同学们排成一队，老师要大家按身高从矮到高站好。怎么排呢？一个简单的办法就是：每次都从还没排好的同学里找到最矮的那一个，让他站到前面去。这就是选择排序的思想！",
+      "html": "<div style=\"text-align:center\">\n<div class=\"big-icon\">🎯</div>\n<div class=\"intro-title\">选择排序</div>\n<div class=\"intro-sub\">P61-初等排序（一）</div>\n</div>",
+      "audioDurationMs": 25488
+    },
+    {
+      "id": 1,
+      "name": "条件拆解",
+      "type": "conditions",
+      "audioFile": "stage-1.mp3",
+      "narration": "选择排序的思路非常简单，就三步：第一步，从所有还没排好的数字中，找到最小的那个。第二步，把它放到已经排好部分的末尾。第三步，重复前面的步骤，直到全部排好。记住，n个元素只需要排n减1轮，因为最后一个自然就归位了。",
+      "html": "<div class=\"info-card\">\n<div style=\"font-size:17px;margin:8px 0\">选择排序的思路非常简单，就三步：第一步，从所有还没排好的数字中，找到最小的那个</div>\n<div style=\"font-size:17px;margin:8px 0\">第二步，把它放到已经排好部分的末尾</div>\n<div style=\"font-size:17px;margin:8px 0\">第三步，重复前面的步骤，直到全部排好</div>\n<div style=\"font-size:17px;margin:8px 0\">记住，n个元素只需要排n减1轮，因为最后一个自然就归位了</div>\n</div>",
+      "audioDurationMs": 22488
+    },
+    {
+      "id": 2,
+      "name": "算法演示",
+      "type": "algorithm",
+      "audioFile": "stage-2.mp3",
+      "narration": "现在我们来实际操作一遍。假设我们有5个数字：29、10、14、37、13。第一轮：从位置1开始，29暂定为最小值。往后扫描，10比29小，更新最小值为10。继续扫描14、37、13，10仍然是最小的。找到最小值10后，把它和位置1的29交换。第一轮完成，最小的10已经排好了。第二轮：从位置2开始，29暂定为最小值。扫描后面：14比29小，更新为14。37跳过，13比14还小，更新为13。找到最小值13，和位置2的29交换。10和13都排好了。继续第三轮、第四轮，最终所有数字从小到大排列整齐。",
+      "html": "<div class=\"info-card\" style=\"font-size:16px\">\n<div style=\"font-size:20px;margin-bottom:12px\">🎬 算法演示</div>\n<div style=\"margin:6px 0;text-align:left\">现在我们来实际操作一遍</div>\n<div style=\"margin:6px 0;text-align:left\">假设我们有5个数字：29、10、14、37、13</div>\n<div style=\"margin:6px 0;text-align:left\">第一轮：从位置1开始，29暂定为最小值</div>\n<div style=\"margin:6px 0;text-align:left\">往后扫描，10比29小，更新最小值为10</div>\n<div style=\"margin:6px 0;text-align:left\">继续扫描14、37、13，10仍然是最小的</div>\n<div style=\"margin:6px 0;text-align:left\">找到最小值10后，把它和位置1的29交换</div>\n</div>",
+      "audioDurationMs": 58296
+    },
+    {
+      "id": 3,
+      "name": "运行结果",
+      "type": "result",
+      "audioFile": "stage-3.mp3",
+      "narration": "排序完成啦！从29、10、14、37、13变成了10、13、14、29、37。所有的数字从小到大排列得整整齐齐。选择排序每轮确定一个最小值的位置，简单直接但确实有效！",
+      "html": "<div style=\"text-align:center\">\n<div style=\"font-size:48px;margin-bottom:16px\">✅</div>\n<div class=\"info-card\">排序完成啦！从29、10、14、37、13变成了10、13、14、29、37。所有的数字从小到大排列得整整齐齐。选择排序每轮确定一个最小值的位置，简单直接但确实有效！</div>\n</div>",
+      "audioDurationMs": 19776
+    },
+    {
+      "id": 4,
+      "name": "代码映射",
+      "type": "codeMapping",
+      "audioFile": "stage-4.mp3",
+      "narration": "现在我们来看看关键代码。选择排序的核心只有5行。外层循环for i从1到n减1，控制当前要放的位置。设mi_id等于i，暂定当前位置就是最小值。内层循环for j从i加1到n，在未排序部分打擂台找最小值。如果发现更小的，就更新mi_id。最后用swap把找到的最小值和位置i交换。代码就是把我们刚才一个一个找最小、一个一个交换的过程，写成了计算机能懂的语言！",
+      "html": "<div style=\"text-align:center\">\n<div style=\"font-size:18px;font-weight:700;color:var(--p);margin-bottom:16px\">💻 关键代码</div>\n<div class=\"code-card\">现在我们来看看关键代码。选择排序的核心只有5行。外层循环for i从1到n减1，控制当前要放的位置。设mi_id等于i，暂定当前位置就是最小值。内层循环for j从i加1到n，在未排序部分打擂台找最小值。如果发现更小的，就更新mi_id。最后用swap把找到的最小值和位置i交换。代码就是把我们刚才一个一个找最小、一个一个交换的过程，写成了计算机能懂的语言！</div>\n</div>",
+      "audioDurationMs": 36600
+    },
+    {
+      "id": 5,
+      "name": "易错提醒",
+      "type": "pitfall",
+      "audioFile": "stage-5.mp3",
+      "narration": "有几个常见的错误要特别注意！第一，内层循环的j必须从i加1开始，不能从i开始，否则会自己和自己比较，完全没有意义。第二，swap的两个参数，第一个是a中mi_id位置，第二个是a中i位置，顺序不能写反。第三，外层循环条件是i小于n，不是i小于等于n，因为n个元素只需要排n减1轮。这些都是考试中经常扣分的地方哦！",
+      "html": "<div class=\"warn-card\">\n<div style=\"font-size:20px;margin-bottom:12px\">⚠️ 易错点提醒</div>\n<div style=\"margin:6px 0;text-align:left\">• 有几个常见的错误要特别注意</div>\n<div style=\"margin:6px 0;text-align:left\">• 第一，内层循环的j必须从i加1开始，不能从i开始，否则会自己和自己比较，完全没有意义</div>\n<div style=\"margin:6px 0;text-align:left\">• 第二，swap的两个参数，第一个是a中mi_id位置，第二个是a中i位置，顺序不能写反</div>\n<div style=\"margin:6px 0;text-align:left\">• 第三，外层循环条件是i小于n，不是i小于等于n，因为n个元素只需要排n减1轮</div>\n<div style=\"margin:6px 0;text-align:left\">• 这些都是考试中经常扣分的地方哦</div>\n</div>",
+      "audioDurationMs": 30984
+    },
+    {
+      "id": 6,
+      "name": "拓展思考",
+      "type": "extension",
+      "audioFile": "stage-6.mp3",
+      "narration": "最后留给大家一个思考题：选择排序每一轮都要扫描所有剩余元素，时间复杂度是n的平方。你能想到更快的排序方法吗？提示一下，下一节课我们要学习冒泡排序和插入排序，它们各有不同的思路。试着想一想，如果是你，你会怎么改进排序的速度呢？",
+      "html": "<div class=\"think-card\">\n<div style=\"font-size:48px;margin-bottom:12px\">🤔</div>\n<div>最后留给大家一个思考题：选择排序每一轮都要扫描所有剩余元素，时间复杂度是n的平方。你能想到更快的排序方法吗？提示一下，下一节课我们要学习冒泡排序和插入排序，它们各有不同的思路。试着想一想，如果是你，你会怎么改进排序的速度呢？</div>\n</div>",
+      "audioDurationMs": 23520
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>16816-课后拓展</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">16816-课后拓展</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>16816-课后拓展</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题意</h2><p>在一片果树林里，猎人站在<span style='color:blue; font-weight:bold;'>蓝色方块</span>的位置，兔八哥站在<span style='color:red; font-weight:bold;'>红色方块</span>的位置。果树上结满了果子，每棵果树都长在<span style='color:green; font-weight:bold;'>整数坐标点</span>上。如果猎人能看到兔子（中间没有果树挡住），兔子就不安全；如果有果树挡住，兔子就安全。</p><div style='display:flex; gap:10px; margin-top:10px;'><span style='display:inline-block; width:30px; height:30px; background:blue; color:white; text-align:center; line-height:30px;'>猎</span><span style='display:inline-block; width:30px; height:30px; background:red; color:white; text-align:center; line-height:30px;'>兔</span><span style='display:inline-block; width:30px; height:30px; background:green; color:white; text-align:center; line-height:30px;'>树</span></div>","narration":"第一步，理解题意。果树林里有很多果树，每棵果树都长在整数坐标点上。猎人想找兔子，如果中间有果树挡住，兔子就安全；如果中间没有果树挡住，兔子就不安全。我们要判断兔子是否安全。"},{"html":"<h2>第二步：找两个位置的距离</h2><p>先看猎人（<span style='color:blue; font-weight:bold;'>蓝</span>）和兔子（<span style='color:red; font-weight:bold;'>红</span>）在<span style='color:purple; font-weight:bold;'>横方向</span>和<span style='color:orange; font-weight:bold;'>竖方向</span>上差了多少格。</p><div style='display:flex; align-items:center; gap:5px; margin-top:10px;'><span style='background:blue; width:20px; height:20px; display:inline-block;'></span><span style='font-size:20px;'>→</span><span style='background:red; width:20px; height:20px; display:inline-block;'></span><span style='margin-left:10px;'>横差：<span style='color:purple; font-weight:bold;'>dx</span></span></div><div style='display:flex; align-items:center; gap:5px; margin-top:5px;'><span style='background:blue; width:20px; height:20px; display:inline-block;'></span><span style='font-size:20px;'>↓</span><span style='background:red; width:20px; height:20px; display:inline-block;'></span><span style='margin-left:10px;'>竖差：<span style='color:orange; font-weight:bold;'>dy</span></span></div>","narration":"第二步，计算猎人和兔子之间的距离。先看横方向差了多少格，记作dx；再看竖方向差了多少格，记作dy。这两个数很重要，能帮我们判断中间有没有果树。"},{"html":"<h2>第三步：特殊情况——重合</h2><p>如果猎人和兔子站在<span style='color:red; font-weight:bold;'>同一个位置</span>，也就是<span style='color:purple;'>dx=0</span>且<span style='color:orange;'>dy=0</span>，那猎人直接就能看到兔子，兔子<span style='color:red; font-weight:bold;'>不安全</span>。</p><div style='display:flex; justify-content:center; margin-top:10px;'><span style='display:inline-block; width:40px; height:40px; background:purple; color:white; text-align:center; line-height:40px; border-radius:50%;'>猎兔</span><span style='margin-left:10px; font-size:24px;'>❌不安全</span></div>","narration":"第三步，检查特殊情况。如果猎人和兔子站在同一个点上，那猎人一伸手就能抓到兔子，兔子肯定不安全。"},{"html":"<h2>第四步：用最大公约数判断</h2><p>我们来看<span style='color:purple; font-weight:bold;'>dx</span>和<span style='color:orange; font-weight:bold;'>dy</span>的<span style='color:red; font-weight:bold;'>最大公约数</span>。如果最大公约数等于<span style='color:blue; font-weight:bold;'>1</span>，说明中间没有果树，猎人能看到兔子，兔子<span style='color:red; font-weight:bold;'>不安全</span>。</p><div style='display:flex; justify-content:center; gap:20px; margin-top:10px;'><span style='background:purple; padding:5px 10px; border-radius:5px; color:white;'>dx</span><span style='font-size:24px;'>↔</span><span style='background:orange; padding:5px 10px; border-radius:5px; color:white;'>dy</span><span style='font-size:24px;'>→</span><span style='background:red; padding:5px 10px; border-radius:5px; color:white;'>最大公约数=1 → 不安全</span></div>","narration":"第四步，用最大公约数来判断。如果dx和dy的最大公约数是1，说明从猎人到兔子的连线上，没有其他整数点，也就是没有果树挡住，猎人能看到兔子，兔子不安全。"},{"html":"<h2>第五步：安全的情况</h2><p>如果<span style='color:purple; font-weight:bold;'>dx</span>和<span style='color:orange; font-weight:bold;'>dy</span>的<span style='color:red; font-weight:bold;'>最大公约数大于1</span>，说明中间有果树挡住，猎人看不到兔子，兔子<span style='color:green; font-weight:bold;'>安全</span>。</p><div style='display:flex; justify-content:center; gap:20px; margin-top:10px;'><span style='background:purple; padding:5px 10px; border-radius:5px; color:white;'>dx</span><span style='font-size:24px;'>↔</span><span style='background:orange; padding:5px 10px; border-radius:5px; color:white;'>dy</span><span style='font-size:24px;'>→</span><span style='background:green; padding:5px 10px; border-radius:5px; color:white;'>最大公约数>1 → 安全 ✅</span></div>","narration":"第五步，如果dx和dy的最大公约数大于1，说明猎人和兔子的连线上有果树挡住，猎人看不到兔子，兔子就安全了。"},{"html":"<h2>第六步：总结</h2><p>判断兔子是否安全，只需要三步：</p><ol style='margin-top:10px;'><li>计算横差<span style='color:purple;'>dx</span>和竖差<span style='color:orange;'>dy</span></li><li>如果<span style='color:red;'>dx=0且dy=0</span>，不安全</li><li>否则看<span style='color:red;'>最大公约数</span>：等于1不安全，大于1安全</li></ol><div style='display:flex; justify-content:center; gap:15px; margin-top:10px;'><span style='background:blue; padding:5px 10px; border-radius:5px; color:white;'>猎人</span><span style='font-size:20px;'>🔍</span><span style='background:green; padding:5px 10px; border-radius:5px; color:white;'>果树挡住→安全</span><span style='background:red; padding:5px 10px; border-radius:5px; color:white;'>没挡住→不安全</span></div>","narration":"第六步，总结一下。先算横差和竖差，如果重合就不安全。如果不重合，就看这两个数的最大公约数，等于1就不安全，大于1就安全。这样就能判断兔子是否安全了。"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

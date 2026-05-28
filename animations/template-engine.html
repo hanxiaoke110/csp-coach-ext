@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>算法动画讲解</title>
+<style>
+:root {
+  --p: #6366f1; --ph: #4f46e5; --s: #10b981; --w: #f59e0b; --e: #ef4444;
+  --bg: #f0f4ff; --card: #fff; --t: #1e293b; --t2: #64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+  background:linear-gradient(135deg,#eef2ff 0%,#e0e7ff 50%,#fae8ff 100%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;
+}
+.player{
+  width:100%;max-width:1100px;background:var(--card);border-radius:24px;
+  box-shadow:0 20px 60px rgba(79,70,229,0.12),0 4px 16px rgba(0,0,0,0.06);
+  overflow:hidden;display:flex;flex-direction:column;max-height:95vh;
+}
+.header{
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:#fff;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;
+}
+.header h1{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.header .badge{font-size:12px;background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:20px}
+
+.stage-nav{
+  display:flex;gap:0;padding:12px 28px;background:#fafaff;border-bottom:1px solid #f0f0ff;
+  align-items:center;overflow-x:auto;
+}
+.stage-dot{
+  width:32px;height:32px;border-radius:50%;border:2px solid #e2e8f0;
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;transition:all .2s;flex-shrink:0;position:relative;
+}
+.stage-dot.active{border-color:var(--p);background:#eef2ff;color:var(--p);font-weight:700;transform:scale(1.15)}
+.stage-dot.done{border-color:var(--s);background:#d1fae5;color:#065f46}
+.stage-dot .dot-label{position:absolute;top:36px;font-size:10px;white-space:nowrap;color:var(--t2);left:50%;transform:translateX(-50%)}
+.stage-dot.active .dot-label{color:var(--p);font-weight:600}
+.stage-connector{flex:1;height:2px;background:#e2e8f0;margin:0 4px;min-width:8px;transition:background .3s}
+.stage-connector.done{background:var(--s)}
+
+.main{flex:1;min-height:0;overflow:hidden;display:flex}
+.stage-area{flex:1;padding:24px 28px;display:flex;align-items:center;justify-content:center;min-height:320px;overflow-y:auto}
+.stage-content{width:100%;max-width:700px}
+
+.controls{
+  display:flex;align-items:center;gap:12px;padding:14px 28px;background:#fafaff;
+  border-top:1px solid #f0f0ff;flex-wrap:wrap;justify-content:center;
+}
+.progress-bar-wrap{flex:1;min-width:120px;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--p);border-radius:3px;transition:width .3s;width:0%}
+.btn{padding:10px 20px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:active{transform:scale(.95)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn-play{background:var(--s);color:#fff}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:var(--p);color:#fff}
+.btn-reset{background:#f1f5f9;color:var(--t2)}
+.stage-indicator{font-size:13px;color:var(--t2);font-weight:600;min-width:50px;text-align:center}
+
+/* Stage content */
+.code-card{background:#1e293b;color:#e2e8f0;padding:18px 24px;border-radius:14px;font-family:'SF Mono','Fira Code',monospace;font-size:16px;line-height:1.8;text-align:left}
+.info-card{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:14px;padding:20px 24px;font-size:15px;color:#166534;line-height:1.8;text-align:center}
+.warn-card{background:#fef2f2;border:2px solid #fecaca;border-radius:14px;padding:20px 24px;font-size:15px;color:#991b1b;line-height:1.8;text-align:center}
+.think-card{background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:16px;padding:24px;font-size:17px;font-weight:600;color:#92400e;text-align:center}
+.loading{color:var(--t2);font-size:15px;text-align:center;padding:40px}
+</style>
+</head>
+<body>
+<div class="player">
+  <div class="header">
+    <h1 id="titleDisplay">加载中...</h1>
+    <span class="badge" id="stageBadge"></span>
+  </div>
+  <div class="stage-nav" id="stageNav"></div>
+  <div class="main">
+    <div class="stage-area" id="stageArea">
+      <div class="loading"><span id="debugStatus">JS未执行</span></div>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <span class="stage-indicator" id="stageIndicator">0/0</span>
+    <button class="btn btn-prev" id="btnPrev" disabled>上一步</button>
+    <button class="btn btn-play" id="btnPlay">▶ 播放</button>
+    <button class="btn btn-next" id="btnNext" disabled>下一步</button>
+    <button class="btn btn-reset" id="btnReset">↺ 重来</button>
+    <select id="voiceSelect" style="padding:8px 12px;border-radius:8px;border:1px solid #e2e8f0;font-size:13px;max-width:120px" title="浏览器TTS音色"></select>
+  </div>
+</div>
+<script src="template-engine.js"></script>
+</body>
+</html>

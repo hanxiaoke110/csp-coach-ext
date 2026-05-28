@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>7522-拓展练习1</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">7522-拓展练习1</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>7522-拓展练习1</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题目</h2><p>题目要求我们把一个<strong>小数形式的小时数</strong>转换成<strong>小时和分钟</strong>。比如：</p><div style='display:flex; gap:20px; align-items:center; font-size:24px; margin:15px 0;'>  <span style='background:#FFD700; padding:10px 20px; border-radius:10px;'>2.8 小时</span>  <span style='font-size:30px;'>→</span>  <span style='background:#87CEEB; padding:10px 20px; border-radius:10px;'>2 小时</span>  <span style='background:#98FB98; padding:10px 20px; border-radius:10px;'>48 分钟</span></div><p>我们要把小数部分（0.8小时）变成分钟（0.8×60=48分钟）。</p>","narration":"第一步，理解题目。题目给了我们一个小数形式的小时数，比如2.8小时。我们要把它拆成整数小时和分钟两部分。2.8小时就是2小时加上0.8小时，而0.8小时等于48分钟。所以答案是2小时48分钟。"},{"html":"<h2>第二步：拆出整数小时</h2><p>先把小数小时数的<strong>整数部分</strong>取出来，这就是小时数。</p><div style='display:flex; gap:20px; align-items:center; font-size:24px; margin:15px 0;'>  <span style='background:#FFD700; padding:10px 20px; border-radius:10px;'>2.8</span>  <span style='font-size:30px;'>→</span>  <span style='background:#FF6347; padding:10px 20px; border-radius:10px;'>整数部分 = 2</span></div><p>就像切蛋糕，先把整块的部分拿走。</p>","narration":"第二步，我们先把整数小时拿出来。比如2.8，整数部分是2，这就是小时数。我们像切蛋糕一样，先把整块的2小时切出来。"},{"html":"<h2>第三步：计算分钟数</h2><p>用<strong>小数部分 × 60</strong>得到分钟数。</p><div style='display:flex; gap:20px; align-items:center; font-size:24px; margin:15px 0; flex-wrap:wrap;'>  <span style='background:#FFD700; padding:10px 20px; border-radius:10px;'>2.8</span>  <span style='font-size:30px;'>→</span>  <span style='background:#FF6347; padding:10px 20px; border-radius:10px;'>小数部分 = 0.8</span>  <span style='font-size:30px;'>→</span>  <span style='background:#98FB98; padding:10px 20px; border-radius:10px;'>0.8 × 60 = 48 分钟</span></div><p>注意：要<strong>四舍五入</strong>，避免计算误差。比如0.5小时×60=30分钟，刚刚好。</p>","narration":"第三步，计算分钟数。我们用小数部分乘以60。比如0.8小时乘以60等于48分钟。这里要注意四舍五入，因为计算机算小数有时会有小误差，我们加上0.5再取整，就能得到正确的分钟数了。"},{"html":"<h2>第四步：输出结果</h2><p>把<strong>小时</strong>和<strong>分钟</strong>用空格隔开输出。</p><div style='display:flex; gap:20px; align-items:center; font-size:24px; margin:15px 0;'>  <span style='background:#FF6347; padding:10px 20px; border-radius:10px;'>2</span>  <span style='font-size:30px;'>空格</span>  <span style='background:#98FB98; padding:10px 20px; border-radius:10px;'>48</span></div><p>最终答案就是：2 48</p>","narration":"第四步，输出结果。我们把得到的小时数和分钟数用空格隔开，输出出来。比如2和48，中间加一个空格，就是2 48。这样题目就完成了！"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

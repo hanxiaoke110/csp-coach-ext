@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>13852-课后作业2</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">13852-课后作业2</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>13852-课后作业2</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：认识梯形</h2><p>梯形有两条边是平平的，叫上底和下底，还有一条垂直的边叫高。</p><div style='display:flex;align-items:center;gap:10px;'><span style='background:#FF6B6B;padding:5px 10px;border-radius:5px;'>上底</span><span style='background:#4ECDC4;padding:5px 10px;border-radius:5px;'>下底</span><span style='background:#45B7D1;padding:5px 10px;border-radius:5px;'>高</span></div><div style='margin-top:10px;border:2px solid #333;width:200px;height:100px;position:relative;'><div style='position:absolute;top:0;left:20px;width:160px;height:2px;background:#FF6B6B;'></div><div style='position:absolute;bottom:0;left:10px;width:180px;height:2px;background:#4ECDC4;'></div><div style='position:absolute;top:0;left:20px;width:2px;height:100px;background:#45B7D1;'></div></div>","narration":"第一步，我们先认识梯形。梯形有两条平行的边，上面的叫上底，下面的叫下底，还有一条垂直的边叫高。今天我们要用公式计算梯形的面积。"},{"html":"<h2>第二步：面积公式</h2><p>梯形的面积 = (上底 + 下底) × 高 ÷ 2</p><div style='display:flex;align-items:center;gap:10px;flex-wrap:wrap;'><span style='background:#FF6B6B;padding:5px 10px;border-radius:5px;'>上底=5</span><span style='background:#4ECDC4;padding:5px 10px;border-radius:5px;'>下底=7</span><span style='background:#45B7D1;padding:5px 10px;border-radius:5px;'>高=4</span></div><div style='margin-top:10px;'><span style='background:#FFE66D;padding:8px 15px;border-radius:10px;font-size:20px;'>(5+7)×4÷2 = 24</span></div>","narration":"第二步，记住面积公式。把上底和下底加起来，乘以高，再除以2，就能得到梯形的面积。比如上底5、下底7、高4，面积就是24。"},{"html":"<h2>第三步：输入梯形数量</h2><p>先告诉计算机有几个梯形要计算。</p><div style='display:flex;align-items:center;gap:10px;'><span style='background:#A8E6CF;padding:8px 15px;border-radius:10px;font-size:18px;'>输入：3</span><span style='background:#FFD3B6;padding:8px 15px;border-radius:10px;'>表示有3个梯形</span></div><div style='margin-top:10px;display:flex;gap:5px;'><span style='background:#FF6B6B;padding:5px 10px;border-radius:5px;'>梯形1</span><span style='background:#4ECDC4;padding:5px 10px;border-radius:5px;'>梯形2</span><span style='background:#45B7D1;padding:5px 10px;border-radius:5px;'>梯形3</span></div>","narration":"第三步，先输入一共有几个梯形。比如输入3，就表示我们要计算3个梯形的面积。计算机就会准备好处理3个梯形。"},{"html":"<h2>第四步：逐个计算面积</h2><p>对每个梯形，输入它的上底、下底和高，然后计算面积。</p><div style='display:flex;flex-direction:column;gap:10px;'><div style='background:#F0F0F0;padding:10px;border-radius:10px;'><span>梯形1：上底=3，下底=5，高=2</span><span style='background:#FFE66D;padding:5px 10px;border-radius:5px;margin-left:10px;'>面积=8.0</span></div><div style='background:#F0F0F0;padding:10px;border-radius:10px;'><span>梯形2：上底=4，下底=6，高=3</span><span style='background:#FFE66D;padding:5px 10px;border-radius:5px;margin-left:10px;'>面积=15.0</span></div><div style='background:#F0F0F0;padding:10px;border-radius:10px;'><span>梯形3：上底=2，下底=8，高=5</span><span style='background:#FFE66D;padding:5px 10px;border-radius:5px;margin-left:10px;'>面积=25.0</span></div></div>","narration":"第四步，开始逐个计算。每个梯形都要输入上底、下底和高，然后用公式算出面积。比如第一个梯形上底3、下底5、高2，面积就是8.0。"},{"html":"<h2>第五步：输出结果</h2><p>每个梯形的面积都要保留一位小数输出。</p><div style='display:flex;flex-direction:column;gap:5px;'><span style='background:#A8E6CF;padding:8px 15px;border-radius:10px;'>8.0</span><span style='background:#A8E6CF;padding:8px 15px;border-radius:10px;'>15.0</span><span style='background:#A8E6CF;padding:8px 15px;border-radius:10px;'>25.0</span></div><p style='color:#666;'>每个结果占一行，保留一位小数</p>","narration":"第五步，输出每个梯形的面积。每个面积都要保留一位小数，比如8.0、15.0、25.0，每个结果单独占一行。这样我们就完成了所有梯形的面积计算。"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "CSP 教练助手",
+  "version": "2.0.0",
+  "description": "C++ 信奥教学辅助工具 — 教练版",
+  "permissions": ["sidePanel", "storage", "unlimitedStorage"],
+  "side_panel": { "default_path": "coach/sidepanel.html" },
+  "action": { "default_title": "CSP 教练助手" },
+  "icons": { "16": "icons/icon16_coach.png", "48": "icons/icon48_coach.png", "128": "icons/icon128_coach.png" },
+  "host_permissions": [
+    "https://api.deepseek.com/*",
+    "https://open.bigmodel.cn/*",
+    "https://api.siliconflow.cn/*",
+    "https://dashscope.aliyuncs.com/*"
+  ],
+  "options_page": "options/options.html",
+  "web_accessible_resources": [{
+    "resources": [
+      "lib/highlight.min.js",
+      "lib/highlight-cpp.min.js",
+      "shared/data/*.json",
+      "animations/*.html"
+    ],
+    "matches": ["<all_urls>"]
+  }]
+}

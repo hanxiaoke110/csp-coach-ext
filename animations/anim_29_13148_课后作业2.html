@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>13148-课后作业2</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">13148-课后作业2</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>13148-课后作业2</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：认识题目</h2><p>今天我们要在一句话里，找到<strong>最长</strong>和<strong>最短</strong>的单词！</p><p>比如这句话：<span style='background:#FFD700; padding:4px 8px; border-radius:5px;'>我 爱 吃 苹果</span></p><p>单词有：<span style='color:#FF6347; font-weight:bold;'>我</span>、<span style='color:#4682B4; font-weight:bold;'>爱</span>、<span style='color:#32CD32; font-weight:bold;'>吃</span>、<span style='color:#8A2BE2; font-weight:bold;'>苹果</span></p><p>最长的单词是：<span style='background:#90EE90; padding:4px 8px; border-radius:5px;'>苹果</span>（2个字）</p><p>最短的单词是：<span style='background:#FFB6C1; padding:4px 8px; border-radius:5px;'>我</span>（1个字）</p>","narration":"第一步，我们来认识题目。我们要在一句话里，找出最长的单词和最短的单词。比如“我 爱 吃 苹果”这句话，最长的单词是“苹果”，最短的单词是“我”。"},{"html":"<h2>第二步：准备两个小盒子</h2><p>我们准备两个小盒子：</p><p>📦 <span style='background:#FFD700; padding:4px 8px; border-radius:5px;'>最长盒子</span> 一开始放一个空字符串</p><p>📦 <span style='background:#87CEEB; padding:4px 8px; border-radius:5px;'>最短盒子</span> 一开始放整句话（当作最大）</p><p>然后我们还要一个<span style='background:#FFB6C1; padding:4px 8px; border-radius:5px;'>临时小篮子</span>，用来收集每个单词的字母。</p>","narration":"第二步，我们准备两个小盒子。一个叫最长盒子，一开始是空的；另一个叫最短盒子，一开始放整句话。再准备一个临时小篮子，用来装正在看的单词。"},{"html":"<h2>第三步：一个字一个字地看</h2><p>我们从头开始，一个字一个字地看这句话：</p><p>句子：<span style='background:#F0E68C; padding:4px 8px; border-radius:5px;'>我 爱 吃 苹果</span></p><p>🔍 看到第1个字：<span style='color:#FF6347; font-weight:bold;'>我</span> → 放进临时篮子 → 篮子：<span style='background:#FFB6C1; padding:4px 8px; border-radius:5px;'>我</span></p><p>🔍 看到空格或逗号，说明一个单词结束了！</p><p>比较：篮子里是“我”（1个字），最长盒子是空（0个字）→ 1>0，所以最长盒子变成“我”</p><p>最短盒子是整句话（4个字）→ 1<4，所以最短盒子也变成“我”</p><p>然后清空篮子。</p>","narration":"第三步，我们一个字一个字地看。看到字母就放进临时篮子，看到空格或逗号，说明一个单词结束了。这时比较篮子里单词的长度和两个盒子里的长度，如果更长就更新最长盒子，如果更短就更新最短盒子，然后清空篮子继续。"},{"html":"<h2>第四步：继续看下一个单词</h2><p>继续看：</p><p>🔍 看到第2个字：<span style='color:#4682B4; font-weight:bold;'>爱</span> → 放进篮子 → 篮子：<span style='background:#FFB6C1; padding:4px 8px; border-radius:5px;'>爱</span></p><p>又遇到空格 → 单词结束！</p><p>比较：篮子“爱”（1个字），最长盒子“我”（1个字）→ 1不大于1，不变</p><p>最短盒子“我”（1个字）→ 1不小于1，不变</p><p>清空篮子。</p><p>🔍 看到第3个字：<span style='color:#32CD32; font-weight:bold;'>吃</span> → 同样，1个字，不比最长长，不比最短短，不变。</p>","narration":"第四步，继续看下一个单词。比如“爱”和“吃”，都是1个字，和最长盒子里的“我”一样长，不比它长，也不比最短盒子里的“我”短，所以两个盒子都不变。"},{"html":"<h2>第五步：找到最后一个单词</h2><p>🔍 看到第4个字：<span style='color:#8A2BE2; font-weight:bold;'>苹</span> → 放进篮子 → 篮子：<span style='background:#FFB6C1; padding:4px 8px; border-radius:5px;'>苹</span></p><p>🔍 看到第5个字：<span style='color:#8A2BE2; font-weight:bold;'>果</span> → 放进篮子 → 篮子：<span style='background:#FFB6C1; padding:4px 8px; border-radius:5px;'>苹果</span></p><p>句子结束，没有空格了，但最后一个单词也要比较！</p><p>比较：篮子“苹果”（2个字），最长盒子“我”（1个字）→ 2>1，最长盒子变成<span style='background:#90EE90; padding:4px 8px; border-radius:5px;'>苹果</span></p><p>最短盒子“我”（1个字）→ 2不小于1，不变</p>","narration":"第五步，看到最后一个单词“苹果”。它有2个字，比最长盒子里的“我”长，所以最长盒子更新为“苹果”。最短盒子还是“我”，因为“苹果”更长。"},{"html":"<h2>第六步：得到答案</h2><p>全部看完啦！我们来看看两个盒子：</p><p>📦 <span style='background:#FFD700; padding:4px 8px; border-radius:5px;'>最长盒子</span> → <span style='background:#90EE90; padding:4px 8px; border-radius:5px; font-size:1.2em;'>苹果</span></p><p>📦 <span style='background:#87CEEB; padding:4px 8px; border-radius:5px;'>最短盒子</span> → <span style='background:#FFB6C1; padding:4px 8px; border-radius:5px; font-size:1.2em;'>我</span></p><p>🎉 答案就是：最长单词是“苹果”，最短单词是“我”！</p>","narration":"第六步，得到答案。最长盒子里的单词是“苹果”，最短盒子里的单词是“我”。这样我们就成功找到了句子中最长和最短的单词啦！"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

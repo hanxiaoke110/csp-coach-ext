@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>8795-课后作业1</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">8795-课后作业1</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>8795-课后作业1</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：理解题目</h2><p>我们要计算一个有趣的数学问题：输入一个数字 <span style='color: #FF6B6B; font-weight: bold;'>n</span>，然后计算 <span style='color: #4ECDC4; font-weight: bold;'>1! + 2! + 3! + ... + n!</span> 的结果。</p><p>比如：如果 n=3，就要计算 <span style='color: #FFD93D;'>1! = 1</span>，<span style='color: #6BCB77;'>2! = 1×2 = 2</span>，<span style='color: #4D96FF;'>3! = 1×2×3 = 6</span>，然后把它们加起来：<span style='color: #FF6B6B; font-weight: bold;'>1 + 2 + 6 = 9</span>。</p>","narration":"第一步，我们来理解题目。我们要输入一个数字n，然后计算从1的阶乘一直加到n的阶乘的总和。阶乘就是从1开始连续乘到那个数，比如3的阶乘就是1乘2乘3等于6。"},{"html":"<h2>第二步：准备两个小盒子</h2><p>我们需要两个小盒子来帮忙计算：</p><p>📦 <span style='color: #FF6B6B; font-weight: bold;'>盒子1（叫sum1）</span>：用来装当前数字的阶乘，一开始放<span style='color: #FF6B6B;'>1</span>。</p><p>📦 <span style='color: #4ECDC4; font-weight: bold;'>盒子2（叫sum2）</span>：用来装所有阶乘的总和，一开始放<span style='color: #4ECDC4;'>0</span>。</p><p>比如 n=3 时，两个盒子这样开始：<span style='background: #FFEAA7; padding: 2px 6px; border-radius: 4px;'>sum1 = 1</span>，<span style='background: #DFE6E9; padding: 2px 6px; border-radius: 4px;'>sum2 = 0</span></p>","narration":"第二步，我们准备两个小盒子。第一个盒子叫sum1，用来计算每个数字的阶乘，一开始放1。第二个盒子叫sum2，用来装所有阶乘加起来的和，一开始放0。"},{"html":"<h2>第三步：从1开始，一个一个来</h2><p>我们要从数字 <span style='color: #FF6B6B; font-weight: bold;'>1</span> 开始，一直走到数字 <span style='color: #FF6B6B; font-weight: bold;'>n</span>。</p><p>每走一步，做两件事：</p><p>1️⃣ 用 <span style='color: #FFD93D;'>盒子1</span> 乘上当前数字，得到新的阶乘。</p><p>2️⃣ 把 <span style='color: #FFD93D;'>盒子1</span> 的值加到 <span style='color: #6BCB77;'>盒子2</span> 里。</p><p>比如 n=3 时：</p><p>👉 数字1：<span style='background: #FFEAA7; padding: 2px 6px; border-radius: 4px;'>sum1 = 1×1 = 1</span>，<span style='background: #DFE6E9; padding: 2px 6px; border-radius: 4px;'>sum2 = 0+1 = 1</span></p>","narration":"第三步，我们从数字1开始，一个一个走到数字n。每走一步，先用盒子1乘上当前数字，得到这个数字的阶乘，然后把这个阶乘加到盒子2里面去。"},{"html":"<h2>第四步：继续走第二步</h2><p>走到数字 <span style='color: #FF6B6B; font-weight: bold;'>2</span>：</p><p>1️⃣ <span style='background: #FFEAA7; padding: 2px 6px; border-radius: 4px;'>sum1 = 1×2 = 2</span>（这是2的阶乘）</p><p>2️⃣ <span style='background: #DFE6E9; padding: 2px 6px; border-radius: 4px;'>sum2 = 1+2 = 3</span></p><p>现在盒子2里装的是 <span style='color: #4ECDC4; font-weight: bold;'>1! + 2! = 1 + 2 = 3</span></p>","narration":"第四步，走到数字2。盒子1变成1乘2等于2，这是2的阶乘。然后盒子2加上这个2，变成1加2等于3。"},{"html":"<h2>第五步：走到最后一步</h2><p>走到数字 <span style='color: #FF6B6B; font-weight: bold;'>3</span>：</p><p>1️⃣ <span style='background: #FFEAA7; padding: 2px 6px; border-radius: 4px;'>sum1 = 2×3 = 6</span>（这是3的阶乘）</p><p>2️⃣ <span style='background: #DFE6E9; padding: 2px 6px; border-radius: 4px;'>sum2 = 3+6 = 9</span></p><p>🎉 终于走完了！盒子2里就是答案：<span style='color: #FF6B6B; font-weight: bold; font-size: 1.2em;'>9</span></p><p>验证一下：1! + 2! + 3! = 1 + 2 + 6 = 9 ✅</p>","narration":"第五步，走到最后一个数字3。盒子1变成2乘3等于6，这是3的阶乘。盒子2加上6，变成3加6等于9。这就是我们要的答案！"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>

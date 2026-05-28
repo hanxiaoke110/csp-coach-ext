@@ -1,0 +1,64 @@
+{
+  "problemId": "P60-selection-sort",
+  "title": "选择排序",
+  "lessonTitle": "P60-贪心算法（三）",
+  "code": "#include <bits/stdc++.h>\nusing namespace std;\nint a[110];\nint main(){\n    int n;\n    cin >> n;\n    for(int i=1; i<=n; i++){\n        cin >> a[i];\n    }\n    for(int i=1; i<n; i++){\n        int mi_id = i;\n        for(int j=i+1; j<=n; j++){\n            if(a[mi_id] > a[j]){\n                mi_id = j;\n            }\n        }\n        swap(a[mi_id], a[i]);\n    }\n    for(int i=1; i<=n; i++){\n        cout << a[i] << \" \";\n    }\n    return 0;\n}",
+  "stages": [
+    {
+      "id": 0,
+      "name": "情境引入",
+      "type": "intro",
+      "audioFile": "stage-0.mp3",
+      "narration": "同学们好！今天我们来学习一个非常经典的排序算法——选择排序。想象一下，你手里有一叠扑克牌，数字乱七八糟的，你要把它们从小到大排好。你会怎么做呢？",
+      "audioDurationMs": 15336
+    },
+    {
+      "id": 1,
+      "name": "条件拆解",
+      "type": "conditions",
+      "audioFile": "stage-1.mp3",
+      "narration": "选择排序的思路非常简单，就三步：第一步，从所有还没排好的数字中，找到最小的那个。第二步，把它放到已经排好部分的末尾。第三步，重复前面的步骤，直到全部排好。记住这三步，就掌握了选择排序的核心！",
+      "audioDurationMs": 20232
+    },
+    {
+      "id": 2,
+      "name": "算法演示",
+      "type": "algorithm",
+      "audioFile": "stage-2.mp3",
+      "narration": "现在我们来实际操作一遍。假设我们有5个数字：29、10、14、37、13。先看第一轮：我们从第一个数字开始，往后面找，看看谁最小。10比29小！10是目前最小的。继续往后比，14、37都比10大，13也比10大。所以10就是最小的！把10和29交换位置。第一轮完成，最小的数字10已经排好了！第二轮，从第二个位置开始，在剩下的29、14、37、13中找最小的。14比29小，14是目前最小的。13比14还小！所以13才是最小的。把13和29交换。看，10和13都排好了！继续这样找下去，最终所有数字都会从小到大排好。",
+      "audioDurationMs": 61296
+    },
+    {
+      "id": 3,
+      "name": "运行结果",
+      "type": "result",
+      "audioFile": "stage-3.mp3",
+      "narration": "排序完成啦！从29、10、14、37、13变成了10、13、14、29、37。所有的数字从小到大排列得整整齐齐。选择排序虽然简单，但确实有效！",
+      "audioDurationMs": 17496
+    },
+    {
+      "id": 4,
+      "name": "代码映射",
+      "type": "codeMapping",
+      "audioFile": "stage-4.mp3",
+      "narration": "现在我们来看看代码是怎么写的。外层循环for i从1到n-1，控制当前要放的位置。内层循环for j从i+1到n，在未排序的部分中寻找最小值。变量mi_id记录当前找到的最小值的位置。如果发现更小的，就更新mi_id。找到后，用swap把最小值和当前位置交换。最后输出排序好的数组。看，代码就是把我们刚才一个一个找最小、一个一个交换的过程，写成了计算机能懂的语言！",
+      "audioDurationMs": 37104
+    },
+    {
+      "id": 5,
+      "name": "易错提醒",
+      "type": "pitfall",
+      "audioFile": "stage-5.mp3",
+      "narration": "有几个常见的错误要特别注意！第一，内层循环的j必须从i加1开始，不能从i开始，否则会自己和自己比较，完全没有意义。第二，swap的两个参数分别是a中mi_id位置和i位置，顺序不能写反。第三，别忘了数组索引从1开始，循环边界要写对，比如外层循环是i小于n，不是i小于等于n。这些都是考试中经常扣分的地方哦！",
+      "audioDurationMs": 30576
+    },
+    {
+      "id": 6,
+      "name": "拓展思考",
+      "type": "extension",
+      "audioFile": "stage-6.mp3",
+      "narration": "最后留给大家一个思考题：选择排序每一轮都要扫描所有剩余元素，时间复杂度是n的平方。你能想到更快的排序方法吗？提示一下，下一节课我们要学习冒泡排序和插入排序，它们各有不同的思路。试着想一想，如果是你，你会怎么改进排序的速度呢？",
+      "audioDurationMs": 23520
+    }
+  ]
+}

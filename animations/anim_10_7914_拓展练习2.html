@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>7914-拓展练习2</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#f0f4ff,#fae8ff);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:16px}
+.card{max-width:720px;width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+h1{font-size:24px;color:#1e293b;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;font-size:13px;color:#94a3b8;margin-bottom:16px}
+.stage{min-height:280px;background:linear-gradient(135deg,#f8fafc,#faf5ff);border-radius:16px;padding:24px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;border:2px dashed #e2e8f0}
+.step-content{width:100%;text-align:center}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 22px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.95)}
+.btn-prev{background:#e2e8f0;color:#475569}
+.btn-next{background:#6366f1;color:#fff}
+.btn-play{background:#10b981;color:#fff}
+.btn-reset{background:#f59e0b;color:#fff}
+.btn-speak{background:#8b5cf6;color:#fff;font-size:18px;padding:14px 32px;animation:pulse 1.5s infinite}
+.btn:disabled{opacity:.4;pointer-events:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(139,92,246,.4)}50%{box-shadow:0 0 0 16px rgba(139,92,246,0)}}
+.indicator{font-size:14px;color:#64748b;font-weight:600}
+.progress{width:100%;height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:14px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;transition:width .3s}
+.var-box{display:inline-block;background:#ede9fe;color:#5b21b6;padding:10px 20px;border-radius:12px;font-size:22px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.var-name{font-size:12px;color:#7c3aed;display:block}
+.result-box{display:inline-block;background:#d1fae5;color:#065f46;padding:14px 28px;border-radius:16px;font-size:26px;font-weight:700;margin:8px;animation:bounceIn .4s}
+.io-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.io-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:20px 28px;text-align:center;min-width:110px;animation:bounceIn .4s}
+.io-label{font-size:12px;color:#94a3b8;letter-spacing:1px;margin-bottom:4px}
+.io-value{font-size:32px;font-weight:700;color:#1e293b}
+.arrow{font-size:40px;color:#6366f1;animation:bounceIn .4s}
+.block-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.block{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;animation:bounceIn .4s}
+.block-blue{background:linear-gradient(135deg,#6366f1,#4f46e5)}.block-green{background:linear-gradient(135deg,#10b981,#059669)}.block-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}.block-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.block-pink{background:linear-gradient(135deg,#ec4899,#db2777)}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.1)}100%{transform:scale(1)}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-box{background:#fff;border-radius:24px;padding:40px;text-align:center;max-width:400px}
+.overlay-icon{font-size:64px;margin-bottom:16px}
+.overlay-text{font-size:16px;color:#64748b;margin-bottom:20px}
+.speak-badge{display:inline-block;background:#d1fae5;color:#065f46;font-size:12px;padding:2px 10px;border-radius:10px;margin-left:8px}
+.code-block{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:12px;text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:14px;line-height:1.8;overflow-x:auto;white-space:pre;margin:8px 0}
+.code-block .kw{color:#cba6f7}.code-block .cm{color:#6c7086}.code-block .str{color:#a6e3a1}.code-block .num{color:#fab387}.code-block .fn{color:#89b4fa}
+.blank{display:inline-block;background:#f9e076;color:#92400e;padding:1px 8px;border-radius:3px;font-weight:700;min-width:40px;text-align:center}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+<div class="overlay-box">
+<div class="overlay-icon">🎓</div>
+<h2 style="margin-bottom:8px;color:#1e293b;">7914-拓展练习2</h2>
+<div class="overlay-text">点击下方按钮开始学习<br>（同时启用语音讲解 🔊）</div>
+<button class="btn btn-speak" id="startBtn">🔊 开始讲解</button>
+</div>
+</div>
+<div class="card">
+<h1>7914-拓展练习2</h1>
+<div class="subtitle">共 <span id="totalSteps"></span> 步 <span class="speak-badge" id="speakBadge" style="display:none">🔊 语音已开启</span></div>
+<div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+<div class="stage"><div class="step-content" id="stage"></div></div>
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" disabled>◀ 上一步</button>
+  <span class="indicator" id="indicator">0 / 0</span>
+  <button class="btn btn-next" id="nextBtn">下一步 ▶</button>
+  <button class="btn btn-play" id="playBtn">▶ 自动播放</button>
+  <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+</div>
+</div>
+
+<script type="application/json" id="steps-data" data-voice="auto">[{"html":"<h2>第一步：认识我们的计算器</h2><p>今天我们要做一个<span style='color:#FF6B6B; font-weight:bold;'>神奇计算器</span>！它有两个数字朋友：<span style='color:#4ECDC4; font-weight:bold;'>第一个数字 a</span> 和 <span style='color:#45B7D1; font-weight:bold;'>第二个数字 b</span>，还有一个<span style='color:#FFA07A; font-weight:bold;'>魔法符号 op</span>（+、-、*、/）。</p><div style='display:flex; gap:20px; justify-content:center; margin-top:15px;'><span style='background:#4ECDC4; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>a</span><span style='background:#FFA07A; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>op</span><span style='background:#45B7D1; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>b</span></div>","narration":"第一步，我们来认识这个计算器。它有两个数字，一个叫a，一个叫b，还有一个运算符号，比如加号、减号、乘号或除号。我们要根据符号来决定怎么计算。"},{"html":"<h2>第二步：输入数字和符号</h2><p>我们先输入两个数字：<span style='color:#4ECDC4; font-weight:bold;'>a = 10</span>，<span style='color:#45B7D1; font-weight:bold;'>b = 3</span>，再输入符号：<span style='color:#FFA07A; font-weight:bold;'>op = '+'</span></p><div style='display:flex; gap:20px; justify-content:center; margin-top:15px;'><span style='background:#4ECDC4; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>10</span><span style='background:#FFA07A; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>+</span><span style='background:#45B7D1; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>3</span></div>","narration":"第二步，我们输入两个数字和运算符号。比如输入10和3，再输入加号，这样计算器就知道要算10加3了。"},{"html":"<h2>第三步：检查符号是什么</h2><p>计算器拿到符号后，会像<span style='color:#FF6B6B; font-weight:bold;'>小侦探</span>一样检查符号：</p><div style='display:flex; flex-direction:column; gap:10px; margin-top:15px;'><div style='background:#FFE4E1; padding:10px; border-radius:8px;'>🔍 是加号吗？ → 做加法</div><div style='background:#E0F7FA; padding:10px; border-radius:8px;'>🔍 是减号吗？ → 做减法</div><div style='background:#FFF3E0; padding:10px; border-radius:8px;'>🔍 是乘号吗？ → 做乘法</div><div style='background:#F3E5F5; padding:10px; border-radius:8px;'>🔍 是除号吗？ → 先检查除数是不是0</div></div>","narration":"第三步，计算器会检查符号是什么。如果是加号就做加法，减号做减法，乘号做乘法，除号做除法。如果是除号，还要特别检查除数是不是0。"},{"html":"<h2>第四步：做加法运算</h2><p>我们输入的是加号，所以计算器开始做<span style='color:#FF6B6B; font-weight:bold;'>加法</span>！</p><div style='display:flex; gap:20px; justify-content:center; align-items:center; margin-top:15px;'><span style='background:#4ECDC4; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>10</span><span style='background:#FFA07A; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>+</span><span style='background:#45B7D1; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>3</span><span style='font-size:30px; color:#666;'>=</span><span style='background:#FF6B6B; color:white; padding:15px 25px; border-radius:10px; font-size:24px;'>13.000</span></div><p style='margin-top:10px; color:#666;'>结果保留<span style='color:#FF6B6B; font-weight:bold;'>3位小数</span>，所以显示13.000</p>","narration":"第四步，因为符号是加号，所以计算器做加法。10加3等于13，并且保留3位小数，所以显示13.000。"},{"html":"<h2>第五步：特殊情况处理</h2><p>如果符号是<span style='color:#FF6B6B; font-weight:bold;'>除号</span>，计算器会先检查除数是不是0：</p><div style='display:flex; gap:20px; justify-content:center; margin-top:15px;'><div style='background:#FFE4E1; padding:15px; border-radius:10px; text-align:center;'><span style='font-size:20px;'>❌ 除数为0</span><br><span style='color:#FF6B6B;'>输出：Divided by zero</span></div><div style='background:#E0F7FA; padding:15px; border-radius:10px; text-align:center;'><span style='font-size:20px;'>✅ 除数不为0</span><br><span style='color:#4ECDC4;'>正常做除法</span></div></div><p style='margin-top:10px; color:#666;'>如果符号不是+、-、*、/，会提示<span style='color:#FF6B6B;'>无效操作符</span></p>","narration":"第五步，如果符号是除号，计算器会先检查除数是不是0。如果是0，就提示Divided by zero，不能做除法。如果符号不是加减乘除中的任何一个，就提示无效操作符。"}]</script>
+<script src="../animations/template.js"></script>
+</body>
+</html>
