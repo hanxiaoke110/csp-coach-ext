@@ -161,11 +161,18 @@ async function init() {
       }
       return result;
     }
+    function makeCampRand() {
+      const chars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+      let r = '';
+      for (let i = 0; i < 4; i++) r += chars[Math.floor(Math.random() * chars.length)];
+      return r;
+    }
     function makeCampCode() {
       const d = new Date();
       const date = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
       const hash = makeCampHash(date);
-      return `CAMP-${date}-${hash}`;
+      const rand = makeCampRand();
+      return `CAMP-${date}-${hash}-${rand}`;
     }
 
     const campModal = document.getElementById('campCodeModal');
@@ -208,7 +215,14 @@ async function init() {
     const d = new Date();
     const date = `${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
     const hash = makeExcHash(level, date);
-    return `EXC-${level}-${date}-${hash}`;
+    const rand = makeExcRand();
+    return `EXC-${level}-${date}-${hash}-${rand}`;
+  }
+  function makeExcRand() {
+    const chars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    let r = '';
+    for (let i = 0; i < 4; i++) r += chars[Math.floor(Math.random() * chars.length)];
+    return r;
   }
 
   const excModal = document.getElementById('excCodeModal');

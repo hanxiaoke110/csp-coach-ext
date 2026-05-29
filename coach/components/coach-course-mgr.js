@@ -481,7 +481,7 @@ export default class CoachCourseManager {
 
     let html = `<div style="margin-bottom:8px;display:flex;gap:8px;">
       <input id="mgrEditTitle" value="${escapeHtml(lesson.title || '')}" placeholder="课节标题" style="flex:1;padding:8px;font-size:14px;font-weight:600;border:1px solid #e2e8f0;border-radius:6px;">
-      <input id="mgrEditPassword" value="${escapeHtml(lesson.password || '')}" placeholder="🔒 解锁密码（留空=不锁定）" style="width:200px;padding:8px;font-size:13px;border:1px solid #f59e0b;border-radius:6px;background:#fffbeb;">
+      ${lesson.password ? `<span style="padding:8px 12px;font-size:13px;border:1px solid #fde68a;border-radius:6px;background:#fffbeb;color:#92400e;font-weight:500;white-space:nowrap">🔒 ${escapeHtml(lesson.password)}</span>` : `<span style="padding:8px 12px;font-size:13px;color:#94a3b8;white-space:nowrap">🔓 无密码</span>`}
     </div>
     <div style="margin-bottom:10px;">
       <div style="font-size:12px;font-weight:600;color:#64748b;margin-bottom:4px;">📝 课程概述</div>
@@ -675,7 +675,7 @@ export default class CoachCourseManager {
 
     lesson.title = title;
     lesson.kpSummary = document.getElementById('mgrKpSummary')?.value?.trim() || '';
-    lesson.password = document.getElementById('mgrEditPassword')?.value?.trim() || '';
+    // password is read-only in UI — admin edits in source data
 
     // Check for duplicate password
     if (lesson.password && this._isDupPassword(lesson)) {

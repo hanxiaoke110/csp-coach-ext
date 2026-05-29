@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CSP 教练助手",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "C++ 信奥教学辅助工具 — 教练版",
   "permissions": ["sidePanel", "storage", "unlimitedStorage"],
   "side_panel": { "default_path": "coach/sidepanel.html" },
