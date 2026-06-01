@@ -1,7 +1,37 @@
 /**
  * CoachDebugPanel — 直接把学生代码+题目信息发给 AI 分析
  */
-import { escapeHtml, renderMarkdown } from '../../shared/core/utils.js';
+import { escapeHtml } from '../../shared/core/utils.js';
+
+function renderResult(text) {
+  if (!text) return '';
+  const trimmed = text.trim();
+  if (trimmed.startsWith('✅')) return `<div class="debug-correct">${escapeHtml(trimmed)}</div>`;
+
+  // Parse 3-part format: 错哪了 / 错的代码 / 怎么改
+  const parts = { what: '', bad: '', fix: '' };
+  const lines = trimmed.split('\n');
+  let current = '';
+  for (const line of lines) {
+    if (line.startsWith('错哪了：') || line.startsWith('错哪了:')) { current = 'what'; parts.what = line.replace(/^错哪了[：:]/, '').trim(); }
+    else if (line.startsWith('错的代码：') || line.startsWith('错的代码:')) { current = 'bad'; }
+    else if (line.startsWith('怎么改：') || line.startsWith('怎么改:')) { current = 'fix'; }
+    else if (line.trim()) {
+      if (current === 'bad') parts.bad += line + '\n';
+      else if (current === 'fix') parts.fix += line + '\n';
+    }
+  }
+
+  return `
+    <div class="debug-finding">
+      <div class="debug-label">错哪了</div>
+      <div class="debug-what">${escapeHtml(parts.what)}</div>
+      ${parts.bad ? `<div class="debug-label bad">错的代码</div>
+      <pre class="debug-code-block">${escapeHtml(parts.bad.trim())}</pre>` : ''}
+      ${parts.fix ? `<div class="debug-label fix">怎么改</div>
+      <pre class="debug-code-block">${escapeHtml(parts.fix.trim())}</pre>` : ''}
+    </div>`;
+}
 
 export default class CoachDebugPanel {
   constructor(container, { aiService, lessonTitle, homeworkTitle, answerCode, commonMistakes, description }) {
@@ -49,8 +79,8 @@ export default class CoachDebugPanel {
     );
 
     try {
-      const aiResponse = await this.aiService.sendMessage(prompt, 'coach');
-      resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">🤖 AI 代码分析</div><div class="debug-result-body">${renderMarkdown(aiResponse)}</div></div>`;
+      const aiResponse = await this.aiService.sendMessage(prompt, 'coach_debug');
+      resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">🔍 分析结果</div><div class="debug-result-body">${renderResult(aiResponse)}</div></div>`;
     } catch (e) {
       resultDiv.innerHTML = `<div class="debug-error">⚠️ 分析失败：${escapeHtml(e.message)}。请检查 AI Key 是否已配置。</div>`;
     } finally {
@@ -76,8 +106,8 @@ export default class CoachDebugPanel {
     );
 
     try {
-      const aiResponse = await this.aiService.sendMessage(prompt, 'coach');
-      resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">👀 代码对比</div><div class="debug-result-body">${renderMarkdown(aiResponse)}</div></div>`;
+      const aiResponse = await this.aiService.sendMessage(prompt, 'coach_debug');
+      resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">👀 对比结果</div><div class="debug-result-body">${renderResult(aiResponse)}</div></div>`;
     } catch (e) {
       resultDiv.innerHTML = `<div class="debug-error">⚠️ 对比失败：${escapeHtml(e.message)}。请检查 AI Key 是否已配置。</div>`;
     } finally {

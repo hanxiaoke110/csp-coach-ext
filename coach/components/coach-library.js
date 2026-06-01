@@ -51,8 +51,14 @@ export default class CoachLibrary {
     const body = document.createElement('div'); body.className = 'stage-lessons';
     body.style.display = open ? 'block' : 'none';
     header.addEventListener('click', () => {
-      this.expandedStages.has(stage.id) ? this.expandedStages.delete(stage.id) : this.expandedStages.add(stage.id);
-      this._renderAll();
+      const isOpen = body.style.display !== 'none';
+      body.style.display = isOpen ? 'none' : 'block';
+      header.querySelector('.stage-arrow').textContent = isOpen ? '▶' : '▼';
+      if (isOpen) {
+        this.expandedStages.delete(stage.id);
+      } else {
+        this.expandedStages.add(stage.id);
+      }
     });
     lessons.forEach(l => body.appendChild(this._renderLesson(l)));
     wrapper.appendChild(header); wrapper.appendChild(body);
@@ -73,8 +79,15 @@ export default class CoachLibrary {
     body.style.display = open ? 'block' : 'none';
 
     header.addEventListener('click', () => {
-      this.expandedLessons.has(lesson.id) ? this.expandedLessons.delete(lesson.id) : this.expandedLessons.add(lesson.id);
-      this._renderAll();
+      const isOpen = body.style.display !== 'none';
+      body.style.display = isOpen ? 'none' : 'block';
+      header.querySelector('.lesson-arrow').textContent = isOpen ? '▶' : '▼';
+      if (isOpen) {
+        this.expandedLessons.delete(lesson.id);
+      } else {
+        this.expandedLessons.add(lesson.id);
+        setTimeout(() => this._initDebug(lesson), 0);
+      }
     });
 
     // 知识点标签

@@ -172,6 +172,23 @@ body { font-family: var(--font-sans); color: var(--text-primary); background: va
 .debug-error { color: #dc2626; padding: 12px; font-size: 13px; background: #fef2f2; border-radius: 0 0 6px 6px; }
 .debug-empty { color: #f59e0b; padding: 12px; font-size: 13px; background: #fffbeb; }
 .debug-loading { color: #3b82f6; padding: 12px; font-size: 13px; text-align: center; }
+/* Debug result: 3-part format */
+.debug-finding { padding: 4px 0; }
+.debug-label {
+  font-size: 12px; font-weight: 700; color: #374151;
+  padding: 6px 12px 2px 12px;
+}
+.debug-label.bad { color: #dc2626; }
+.debug-label.fix { color: #16a34a; }
+.debug-what { padding: 2px 12px 6px 12px; font-size: 13px; color: #1f2937; line-height: 1.5; }
+.debug-code-block {
+  margin: 0 12px 8px 12px; padding: 8px 10px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  font-size: 13px; line-height: 1.6;
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
+  color: #1f2937; overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+}
+.debug-correct { color: #16a34a; font-weight: 600; padding: 8px 12px; font-size: 14px; }
 .debug-answer-preview { padding: 0; background: #f0fdf4; border-top: 1px solid #bbf7d0; display: none; }
 .debug-answer-preview pre { margin: 0; padding: 10px; font-size: 12px; overflow-x: auto; }
 .debug-answer-preview code { color: #064e3b; font-family: 'SF Mono', Monaco, monospace; }

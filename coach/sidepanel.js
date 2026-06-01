@@ -195,9 +195,9 @@ async function init() {
 
   // Excellence Code Generator
   const SECRET = 'csp-coach-2025';
-  function makeExcHash(level, date) {
-    // Same algorithm as student RedeemCode.tsx
-    const s = `${level}-${date}-${SECRET}`;
+  function makeExcHash(level, date, rand) {
+    // Same algorithm as student RedeemCode.tsx — rand is part of the hash
+    const s = `${level}-${date}-${rand}-${SECRET}`;
     let h = 0;
     for (let i = 0; i < s.length; i++) {
       h = ((h << 5) - h + s.charCodeAt(i)) | 0;
@@ -214,8 +214,8 @@ async function init() {
   function makeExcCode(level) {
     const d = new Date();
     const date = `${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-    const hash = makeExcHash(level, date);
     const rand = makeExcRand();
+    const hash = makeExcHash(level, date, rand);
     return `EXC-${level}-${date}-${hash}-${rand}`;
   }
   function makeExcRand() {
