@@ -129,43 +129,51 @@ export default class AIService {
     if (commonMistakes?.length) {
       tips = '\n常见错误参考：\n' + commonMistakes.map(m => `- ${m.mistake} → ${m.fix}`).join('\n');
     }
-    const descBlock = description ? `\n### 题目描述：\n${description}\n` : '';
+    const descBlock = description ? `\n### 题目要求：\n${description}\n` : '';
     return `## 课程：${lessonTitle}
 ## 题目：${problemTitle}${descBlock}
-### 参考答案：
-\`\`\`cpp
-${strippedAnswer}
-\`\`\`
-
 ### 学生代码：
 \`\`\`cpp
 ${strippedStudent}
 \`\`\`
+
+### 参考答案（仅供参考，不是唯一解法！学生用不同写法完全可能正确）：
+\`\`\`cpp
+${strippedAnswer}
+\`\`\`
 ${tips}
-请按优先级检查：1.输出格式（分隔符/换行/空格）2.算法逻辑 3.语法。数组开大不算错，不报。`;
+你是 C++ 教学助手。请以「题目要求」为准，判断学生代码是否正确解决问题。
+判断标准：输出是否符合题意、逻辑是否正确、有无越界/内存/死循环/编译错误。
+只要满足题目要求就算对，不要因为和参考答案写法不同（如 for/while 互换、变量名不同、用不同算法）就判错。
+
+输出格式：
+✅ 正确 — 简要说明为什么对
+或
+❌ 问题：<具体错在哪> | 建议：<怎么改> | 代码：<错误代码行>`;
+  }
   }
 
   buildCompareContext(lessonTitle, problemTitle, answerCode, studentCode, description = '') {
     const strippedAnswer = this._stripBoilerplate(answerCode);
     const strippedStudent = this._stripBoilerplate(studentCode);
-    const descBlock = description ? `\n### 题目描述：\n${description}\n` : '';
+    const descBlock = description ? `\n### 题目要求：\n${description}\n` : '';
     return `## 课程：${lessonTitle}
 ## 题目：${problemTitle}${descBlock}
-### 参考答案：
-\`\`\`cpp
-${strippedAnswer}
-\`\`\`
-
 ### 学生代码：
 \`\`\`cpp
 ${strippedStudent}
 \`\`\`
 
-逐行对比学生代码和参考答案，用以下标注：
-+ 多余行（学生写了但答案没有的）
-- 缺失行（答案有但学生没写的）
-~ 修改行（逻辑不同或写法不同，写清差异）
+### 参考答案（仅供参考，写法不同不一定错）：
+\`\`\`cpp
+${strippedAnswer}
+\`\`\`
 
-输出为代码块，每行前面加标注符号。不要给修复建议，只标注差异。200字以内。`;
+逐行对比学生代码和参考答案的结构差异，标注：
++ 学生多了（参考答案没有的）
+- 学生少了（参考答案有的）
+~ 写法不同（但可能仍然正确，标注为"注意"而非"错误"）
+
+输出简洁，每行前面加标注符号。不要给修复建议，只标注差异。200字以内。`;
   }
 }
