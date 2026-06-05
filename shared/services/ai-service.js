@@ -151,7 +151,6 @@ ${tips}
 或
 ❌ 问题：<具体错在哪> | 建议：<怎么改> | 代码：<错误代码行>`;
   }
-  }
 
   buildCompareContext(lessonTitle, problemTitle, answerCode, studentCode, description = '') {
     const strippedAnswer = this._stripBoilerplate(answerCode);
