@@ -146,8 +146,8 @@ async function init() {
     });
     // ─── Training Camp Code Generator ───
     const CAMP_SECRET = 'csp-camp-2025';
-    function makeCampHash(date) {
-      const s = `${date}-${CAMP_SECRET}`;
+    function makeCampHash(date, rand) {
+      const s = `${date}-${rand}-${CAMP_SECRET}`;
       let h = 0;
       for (let i = 0; i < s.length; i++) {
         h = ((h << 5) - h + s.charCodeAt(i)) | 0;
@@ -170,8 +170,8 @@ async function init() {
     function makeCampCode() {
       const d = new Date();
       const date = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-      const hash = makeCampHash(date);
       const rand = makeCampRand();
+      const hash = makeCampHash(date, rand);
       return `CAMP-${date}-${hash}-${rand}`;
     }
 
