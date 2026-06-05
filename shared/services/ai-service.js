@@ -82,7 +82,10 @@ export default class AIService {
   async sendMessage(content, mode) {
     await this.ensureConfigured();
     const messages = this._buildMessages(content, mode);
-    const response = await this.provider.chat(messages);
+    const response = await Promise.race([
+      this.provider.chat(messages),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('AI 请求超时（30秒），请检查网络或 API Key')), 30000))
+    ]);
     // Save to session history
     if (this.sessionService) {
       this.sessionService.addMessage({ role: 'user', content });
