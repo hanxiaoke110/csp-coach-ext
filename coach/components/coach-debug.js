@@ -6,31 +6,58 @@ import { escapeHtml } from '../../shared/core/utils.js';
 function renderResult(text) {
   if (!text) return '';
   const trimmed = text.trim();
-  if (trimmed.startsWith('✅')) return `<div class="debug-correct">${escapeHtml(trimmed)}</div>`;
 
-  // Parse 3-part format: 错哪了/错在哪 / 错的代码 / 怎么改
-  const parts = { what: '', bad: '', fix: '' };
+  // Correct
+  if (trimmed === '正确' || trimmed.startsWith('正确')) {
+    return '<div class="debug-correct">✅ 代码正确</div>';
+  }
+
+  // Parse new minimal format:
+  // Line 1: explanation
+  // Line 2+: old code ❌ → new code ✅ pairs
   const lines = trimmed.split('\n');
-  let current = '';
-  for (const line of lines) {
-    if (line.startsWith('错哪了：') || line.startsWith('错哪了:') || line.startsWith('错在哪：') || line.startsWith('错在哪:')) { current = 'what'; parts.what = line.replace(/^错哪[在了][：:]/, '').trim(); }
-    else if (line.startsWith('错的代码：') || line.startsWith('错的代码:')) { current = 'bad'; }
-    else if (line.startsWith('怎么改：') || line.startsWith('怎么改:')) { current = 'fix'; }
-    else if (line.trim()) {
-      if (current === 'bad') parts.bad += line + '\n';
-      else if (current === 'fix') parts.fix += line + '\n';
+  const explanation = lines[0] || '';
+
+  let badCode = '';
+  let fixCode = '';
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    if (line.includes('❌')) {
+      badCode += (badCode ? '\n' : '') + line.replace(/❌.*$/, '').trim();
+    } else if (line.includes('✅')) {
+      fixCode += (fixCode ? '\n' : '') + line.replace(/✅.*$/, '').trim();
     }
   }
 
-  return `
-    <div class="debug-finding">
-      <div class="debug-label">错哪了</div>
-      <div class="debug-what">${escapeHtml(parts.what)}</div>
-      ${parts.bad ? `<div class="debug-label bad">错的代码</div>
-      <pre class="debug-code-block">${escapeHtml(parts.bad.trim())}</pre>` : ''}
-      ${parts.fix ? `<div class="debug-label fix">怎么改</div>
-      <pre class="debug-code-block">${escapeHtml(parts.fix.trim())}</pre>` : ''}
-    </div>`;
+  // Fallback: old format parsing
+  if (!badCode && !fixCode) {
+    const parts = { what: '', bad: '', fix: '' };
+    let current = '';
+    for (const line of lines) {
+      if (line.startsWith('错哪了：') || line.startsWith('错哪了:') || line.startsWith('错在哪：') || line.startsWith('错在哪:')) {
+        current = 'what'; parts.what = line.replace(/^错哪[在了][：:]/, '').trim();
+      } else if (line.startsWith('错的代码：') || line.startsWith('错的代码:')) { current = 'bad'; }
+      else if (line.startsWith('怎么改：') || line.startsWith('怎么改:')) { current = 'fix'; }
+      else if (line.trim()) {
+        if (current === 'bad') parts.bad += line + '\n';
+        else if (current === 'fix') parts.fix += line + '\n';
+      }
+    }
+    badCode = parts.bad.trim();
+    fixCode = parts.fix.trim();
+    if (!parts.what && !badCode && !fixCode) {
+      return '<div class="debug-error">无法解析分析结果，请重试</div>';
+    }
+    if (parts.what) explanation = parts.what;
+  }
+
+  return '<div class="debug-finding">' +
+    '<div class="debug-what">' + escapeHtml(explanation) + '</div>' +
+    (badCode ? '<div class="debug-label bad">错的代码</div><pre class="debug-code-block">' + escapeHtml(badCode) + '</pre>' : '') +
+    (fixCode ? '<div class="debug-label fix">正确代码</div><pre class="debug-code-block">' + escapeHtml(fixCode) + '</pre>' : '') +
+    '</div>';
 }
 
 export default class CoachDebugPanel {
