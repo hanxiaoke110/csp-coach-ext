@@ -130,32 +130,27 @@ export default class AIService {
     const strippedStudent = this._stripBoilerplate(studentCode);
     let tips = '';
     if (commonMistakes?.length) {
-      tips = '\n常见错误参考：\n' + commonMistakes.map(m => '- ' + m.mistake + ' -> ' + m.fix).join('\n');
+      tips = '\n常见错误：\n' + commonMistakes.map(function(m) { return '- ' + m.mistake + ' (正确做法: ' + m.fix + ')'; }).join('\n');
     }
-    const descBlock = description ? '\n### 题目要求：\n' + description + '\n' : '';
-    return '## 课程：' + lessonTitle + '\n' +
-      '## 题目：' + problemTitle + descBlock +
-      '### 学生代码：\n```cpp\n' + strippedStudent + '\n```\n\n' +
-      '### 参考答案（仅供参考，不是唯一解法！学生用不同写法完全可能正确）：\n```cpp\n' + strippedAnswer + '\n```\n' +
+    var desc = description ? '\n## 题目要求：\n' + description + '\n' : '';
+    return '## ' + lessonTitle + ' — ' + problemTitle + desc +
+      '## 学生代码（需要你推演验证）：\n```cpp\n' + strippedStudent + '\n```\n\n' +
+      '## 参考答案（仅供参考，不是唯一标准）：\n```cpp\n' + strippedAnswer + '\n```\n' +
       tips + '\n' +
-      '你是 C++ 教学助手。请以「题目要求」为准，判断学生代码是否正确解决问题。\n' +
-      '判断标准：输出是否符合题意、逻辑是否正确、有无越界/内存/死循环/编译错误。\n' +
-      '只要满足题目要求就算对，不要因为和参考答案写法不同就判错。\n' +
-      '输出格式：正确就回「✅ 正确」，有错就回三行：错在哪：xxx\n错的代码：xxx\n怎么改：xxx';
+      '请按系统提示词的流程：读题 → 推演 → 对比 → 检查 → 结论。必须实际推演！';
   }
 
   buildCompareContext(lessonTitle, problemTitle, answerCode, studentCode, description = '') {
     const strippedAnswer = this._stripBoilerplate(answerCode);
     const strippedStudent = this._stripBoilerplate(studentCode);
-    const descBlock = description ? '\n### 题目要求：\n' + description + '\n' : '';
-    return '## 课程：' + lessonTitle + '\n' +
-      '## 题目：' + problemTitle + descBlock +
-      '### 学生代码：\n```cpp\n' + strippedStudent + '\n```\n\n' +
-      '### 参考答案（仅供参考，写法不同不一定错）：\n```cpp\n' + strippedAnswer + '\n```\n\n' +
-      '逐行对比学生代码和参考答案的结构差异，标注：\n' +
-      '+ 学生多了（参考答案没有的）\n' +
-      '- 学生少了（参考答案有的）\n' +
-      '~ 写法不同（但可能仍然正确，标注为"注意"而非"错误"）\n' +
-      '输出简洁，每行前面加标注符号。不要给修复建议，只标注差异。200字以内。';
+    var desc = description ? '\n## 题目要求：\n' + description + '\n' : '';
+    return '## ' + lessonTitle + ' — ' + problemTitle + desc +
+      '## 学生代码：\n```cpp\n' + strippedStudent + '\n```\n\n' +
+      '## 参考答案：\n```cpp\n' + strippedAnswer + '\n```\n\n' +
+      '逐行标注学生代码和参考答案的差异：\n' +
+      '+ 多了（参考答案没有的）\n' +
+      '- 少了（参考答案有的）\n' +
+      '~ 不同（写法不同，标注为"注意"而非"错误"）\n' +
+      '只标注差异，不判断对错。200字以内。';
   }
 }
