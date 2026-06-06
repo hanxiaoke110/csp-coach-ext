@@ -7,56 +7,35 @@ function renderResult(text) {
   if (!text) return '';
   const trimmed = text.trim();
 
-  // Correct
-  if (trimmed === '正确' || trimmed.startsWith('正确')) {
-    return '<div class="debug-correct">✅ 代码正确</div>';
+  // Correct answer
+  if (trimmed === '正确' || trimmed === '✅ 正确') {
+    return '<div class="debug-correct">✅ 代码正确，没有问题</div>';
   }
 
-  // Parse new minimal format:
-  // Line 1: explanation
-  // Line 2+: old code ❌ → new code ✅ pairs
-  const lines = trimmed.split('\n');
-  const explanation = lines[0] || '';
-
-  let badCode = '';
-  let fixCode = '';
-
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    if (line.includes('❌')) {
-      badCode += (badCode ? '\n' : '') + line.replace(/❌.*$/, '').trim();
-    } else if (line.includes('✅')) {
-      fixCode += (fixCode ? '\n' : '') + line.replace(/✅.*$/, '').trim();
-    }
+  // Extract code blocks: ```cpp ... ```
+  const codeBlocks = [];
+  const codeRe = /```(?:cpp)?\n([\s\S]*?)```/g;
+  let m;
+  while ((m = codeRe.exec(trimmed)) !== null) {
+    codeBlocks.push(m[1].trim());
   }
 
-  // Fallback: old format parsing
-  if (!badCode && !fixCode) {
-    const parts = { what: '', bad: '', fix: '' };
-    let current = '';
-    for (const line of lines) {
-      if (line.startsWith('错哪了：') || line.startsWith('错哪了:') || line.startsWith('错在哪：') || line.startsWith('错在哪:')) {
-        current = 'what'; parts.what = line.replace(/^错哪[在了][：:]/, '').trim();
-      } else if (line.startsWith('错的代码：') || line.startsWith('错的代码:')) { current = 'bad'; }
-      else if (line.startsWith('怎么改：') || line.startsWith('怎么改:')) { current = 'fix'; }
-      else if (line.trim()) {
-        if (current === 'bad') parts.bad += line + '\n';
-        else if (current === 'fix') parts.fix += line + '\n';
-      }
-    }
-    badCode = parts.bad.trim();
-    fixCode = parts.fix.trim();
-    if (!parts.what && !badCode && !fixCode) {
-      return '<div class="debug-error">无法解析分析结果，请重试</div>';
-    }
-    if (parts.what) explanation = parts.what;
+  // First line before any code block is the reason
+  let reason = trimmed.split('\n')[0].trim();
+  // If the first line is itself a code block start, don't use it
+  if (reason.startsWith('```')) reason = '';
+
+  const badCode = codeBlocks[0] || '';
+  const fixCode = codeBlocks[1] || '';
+
+  if (!reason && !badCode && !fixCode) {
+    return '<div class="debug-result-body">' + escapeHtml(trimmed) + '</div>';
   }
 
   return '<div class="debug-finding">' +
-    '<div class="debug-what">' + escapeHtml(explanation) + '</div>' +
+    '<div class="debug-what">' + escapeHtml(reason) + '</div>' +
     (badCode ? '<div class="debug-label bad">错的代码</div><pre class="debug-code-block">' + escapeHtml(badCode) + '</pre>' : '') +
-    (fixCode ? '<div class="debug-label fix">正确代码</div><pre class="debug-code-block">' + escapeHtml(fixCode) + '</pre>' : '') +
+    (fixCode ? '<div class="debug-label fix">怎么改</div><pre class="debug-code-block">' + escapeHtml(fixCode) + '</pre>' : '') +
     '</div>';
 }
 
