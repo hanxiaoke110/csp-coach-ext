@@ -8,12 +8,12 @@ function renderResult(text) {
   const trimmed = text.trim();
   if (trimmed.startsWith('✅')) return `<div class="debug-correct">${escapeHtml(trimmed)}</div>`;
 
-  // Parse 3-part format: 错哪了 / 错的代码 / 怎么改
+  // Parse 3-part format: 错哪了/错在哪 / 错的代码 / 怎么改
   const parts = { what: '', bad: '', fix: '' };
   const lines = trimmed.split('\n');
   let current = '';
   for (const line of lines) {
-    if (line.startsWith('错哪了：') || line.startsWith('错哪了:')) { current = 'what'; parts.what = line.replace(/^错哪了[：:]/, '').trim(); }
+    if (line.startsWith('错哪了：') || line.startsWith('错哪了:') || line.startsWith('错在哪：') || line.startsWith('错在哪:')) { current = 'what'; parts.what = line.replace(/^错哪[在了][：:]/, '').trim(); }
     else if (line.startsWith('错的代码：') || line.startsWith('错的代码:')) { current = 'bad'; }
     else if (line.startsWith('怎么改：') || line.startsWith('怎么改:')) { current = 'fix'; }
     else if (line.trim()) {
