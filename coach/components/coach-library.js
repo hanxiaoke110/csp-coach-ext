@@ -32,6 +32,7 @@ export default class CoachLibrary {
   }
 
   _renderAll() {
+    this._disposeDebugs();
     this.container.innerHTML = '';
     this.debugPanels.clear();
     this.stages.forEach(s => {
@@ -330,6 +331,12 @@ export default class CoachLibrary {
       panel.render();
       this.debugPanels.set(p.id, panel);
     });
+  }
+
+  _disposeDebugs() {
+    for (const panel of this.debugPanels.values()) {
+      if (panel.dispose) panel.dispose();
+    }
   }
 
 }

@@ -1,43 +1,8 @@
 /**
- * CoachDebugPanel — 直接把学生代码+题目信息发给 AI 分析
+ * CoachDebugPanel — 教师端 AI 代码诊断面板
+ * 粘贴学生代码 → 流式输出结构化诊断报告（问题定位 + 修复方案）
  */
-import { escapeHtml } from '../../shared/core/utils.js';
-
-function renderResult(text) {
-  if (!text) return '';
-  const trimmed = text.trim();
-
-  // Correct answer
-  if (trimmed === '正确' || trimmed === '✅ 正确') {
-    return '<div class="debug-correct">✅ 代码正确，没有问题</div>';
-  }
-
-  // Extract code blocks: ```cpp ... ```
-  const codeBlocks = [];
-  const codeRe = /```(?:cpp)?\n([\s\S]*?)```/g;
-  let m;
-  while ((m = codeRe.exec(trimmed)) !== null) {
-    codeBlocks.push(m[1].trim());
-  }
-
-  // First line before any code block is the reason
-  let reason = trimmed.split('\n')[0].trim();
-  // If the first line is itself a code block start, don't use it
-  if (reason.startsWith('```')) reason = '';
-
-  const badCode = codeBlocks[0] || '';
-  const fixCode = codeBlocks[1] || '';
-
-  if (!reason && !badCode && !fixCode) {
-    return '<div class="debug-result-body">' + escapeHtml(trimmed) + '</div>';
-  }
-
-  return '<div class="debug-finding">' +
-    '<div class="debug-what">' + escapeHtml(reason) + '</div>' +
-    (badCode ? '<div class="debug-label bad">错的代码</div><pre class="debug-code-block">' + escapeHtml(badCode) + '</pre>' : '') +
-    (fixCode ? '<div class="debug-label fix">怎么改</div><pre class="debug-code-block">' + escapeHtml(fixCode) + '</pre>' : '') +
-    '</div>';
-}
+import { escapeHtml, renderMarkdown } from '../../shared/core/utils.js';
 
 export default class CoachDebugPanel {
   constructor(container, { aiService, lessonTitle, homeworkTitle, answerCode, commonMistakes, description }) {
@@ -45,38 +10,76 @@ export default class CoachDebugPanel {
     this.aiService = aiService;
     this.context = { lessonTitle, homeworkTitle, answerCode, commonMistakes, description };
     this.analyzing = false;
+    this.abortController = null;
   }
 
   render() {
+    const answer = this.context.answerCode || '';
+    const title = escapeHtml(this.context.homeworkTitle || '');
     this.container.innerHTML = `
       <div class="debug-panel">
-        <div class="debug-header">🔍 代码 Debug — AI 自动分析</div>
+        <div class="debug-header">🔍 代码 Debug — ${title}</div>
+        ${answer ? `
+        <details class="debug-answer-ref">
+          <summary>📋 参考答案</summary>
+          <pre><code>${escapeHtml(answer)}</code></pre>
+        </details>` : ''}
         <textarea class="debug-input" placeholder="粘贴学生代码，点击分析，AI 会自动对比参考答案找出错误..." rows="6"></textarea>
         <div class="debug-actions">
           <button class="debug-run-btn">🤖 AI 分析代码</button>
-          <button class="debug-diff-btn">👀 对比</button>
+          <button class="debug-diff-btn">👀 逐行对比</button>
+          <button class="debug-cancel-btn" style="display:none">✖ 取消</button>
         </div>
         <div class="debug-result" style="display:none"></div>
       </div>`;
 
     this.container.querySelector('.debug-run-btn').addEventListener('click', () => this.analyze());
     this.container.querySelector('.debug-diff-btn').addEventListener('click', () => this.compare());
+    this.container.querySelector('.debug-cancel-btn').addEventListener('click', () => this.cancel());
     this.container.querySelector('.debug-input').addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') this.analyze();
     });
   }
 
+  /** 切换分析状态：禁用/启用按钮，显示/隐藏取消 */
+  _setAnalyzing(state) {
+    this.analyzing = state;
+    const runBtn = this.container.querySelector('.debug-run-btn');
+    const diffBtn = this.container.querySelector('.debug-diff-btn');
+    const cancelBtn = this.container.querySelector('.debug-cancel-btn');
+    runBtn.disabled = state;
+    diffBtn.disabled = state;
+    cancelBtn.style.display = state ? 'inline-block' : 'none';
+  }
+
+  /** 取消正在进行的请求 */
+  cancel() {
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+    }
+    const resultDiv = this.container.querySelector('.debug-result');
+    resultDiv.innerHTML += '<div class="debug-error">⚠️ 已取消</div>';
+    this._setAnalyzing(false);
+  }
+
+  /** AI 分析代码 — 找出错误 */
   async analyze() {
     if (this.analyzing) return;
     const input = this.container.querySelector('.debug-input');
     const resultDiv = this.container.querySelector('.debug-result');
-    const btn = this.container.querySelector('.debug-run-btn');
     const code = input.value.trim();
 
-    if (!code) { resultDiv.style.display = 'block'; resultDiv.innerHTML = '<div class="debug-error">⚠️ 请粘贴学生代码后再分析</div>'; return; }
+    if (!code) {
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = '<div class="debug-error">⚠️ 请粘贴学生代码后再分析</div>';
+      return;
+    }
 
-    this.analyzing = true; btn.disabled = true; btn.textContent = '⏳ AI 分析中...';
-    resultDiv.style.display = 'block'; resultDiv.innerHTML = '<div class="debug-loading">🤖 正在将题目和学生代码发送给 AI 分析...</div>';
+    this._setAnalyzing(true);
+    this.abortController = new AbortController();
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<div class="debug-streaming"><span class="debug-streaming-dot"></span> AI 正在逐行推演分析...</div>';
 
     const prompt = this.aiService.buildDebugContext(
       this.context.lessonTitle, this.context.homeworkTitle,
@@ -85,26 +88,43 @@ export default class CoachDebugPanel {
     );
 
     try {
-      const aiResponse = await this.aiService.sendMessage(prompt, 'coach_debug');
-      resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">🔍 分析结果</div><div class="debug-result-body">${renderResult(aiResponse)}</div></div>`;
+      let fullText = '';
+      await this.aiService.streamMessage(prompt, 'coach_debug', (_delta, fullContent) => {
+        fullText = fullContent;
+        resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">🔍 分析结果</div><div class="debug-result-body">${renderMarkdown(fullText)}</div></div>`;
+        resultDiv.scrollTop = resultDiv.scrollHeight;
+      }, null, { signal: this.abortController.signal });
+
+      // Final render to ensure complete output
+      if (fullText) {
+        resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">🔍 分析结果</div><div class="debug-result-body">${renderMarkdown(fullText)}</div></div>`;
+      }
     } catch (e) {
+      if (e.name === 'AbortError') return; // cancel() already handled
       resultDiv.innerHTML = `<div class="debug-error">⚠️ 分析失败：${escapeHtml(e.message)}。请检查 AI Key 是否已配置。</div>`;
     } finally {
-      btn.disabled = false; btn.textContent = '🤖 AI 分析代码'; this.analyzing = false;
+      this.abortController = null;
+      this._setAnalyzing(false);
     }
   }
 
+  /** 逐行对比学生代码和参考答案 */
   async compare() {
     if (this.analyzing) return;
     const input = this.container.querySelector('.debug-input');
     const resultDiv = this.container.querySelector('.debug-result');
-    const btn = this.container.querySelector('.debug-diff-btn');
     const code = input.value.trim();
 
-    if (!code) { resultDiv.style.display = 'block'; resultDiv.innerHTML = '<div class="debug-error">⚠️ 请粘贴学生代码后再对比</div>'; return; }
+    if (!code) {
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = '<div class="debug-error">⚠️ 请粘贴学生代码后再对比</div>';
+      return;
+    }
 
-    this.analyzing = true; btn.disabled = true; btn.textContent = '⏳ 对比中...';
-    resultDiv.style.display = 'block'; resultDiv.innerHTML = '<div class="debug-loading">👀 正在逐行对比学生代码和参考答案...</div>';
+    this._setAnalyzing(true);
+    this.abortController = new AbortController();
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<div class="debug-streaming"><span class="debug-streaming-dot"></span> AI 正在逐行对比差异...</div>';
 
     const prompt = this.aiService.buildCompareContext(
       this.context.lessonTitle, this.context.homeworkTitle,
@@ -112,12 +132,31 @@ export default class CoachDebugPanel {
     );
 
     try {
-      const aiResponse = await this.aiService.sendMessage(prompt, 'coach_debug');
-      resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">👀 对比结果</div><div class="debug-result-body">${renderResult(aiResponse)}</div></div>`;
+      let fullText = '';
+      await this.aiService.streamMessage(prompt, 'coach_debug', (_delta, fullContent) => {
+        fullText = fullContent;
+        resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">👀 对比结果</div><div class="debug-result-body">${renderMarkdown(fullText)}</div></div>`;
+        resultDiv.scrollTop = resultDiv.scrollHeight;
+      }, null, { signal: this.abortController.signal });
+
+      if (fullText) {
+        resultDiv.innerHTML = `<div class="debug-result-content ai"><div class="debug-result-badge">👀 对比结果</div><div class="debug-result-body">${renderMarkdown(fullText)}</div></div>`;
+      }
     } catch (e) {
+      if (e.name === 'AbortError') return;
       resultDiv.innerHTML = `<div class="debug-error">⚠️ 对比失败：${escapeHtml(e.message)}。请检查 AI Key 是否已配置。</div>`;
     } finally {
-      btn.disabled = false; btn.textContent = '👀 对比'; this.analyzing = false;
+      this.abortController = null;
+      this._setAnalyzing(false);
     }
+  }
+
+  /** 清理资源（CoachLibrary 重新渲染时调用） */
+  dispose() {
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+    }
+    this.analyzing = false;
   }
 }

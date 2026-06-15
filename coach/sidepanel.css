@@ -193,6 +193,43 @@ body { font-family: var(--font-sans); color: var(--text-primary); background: va
 .debug-answer-preview pre { margin: 0; padding: 10px; font-size: 12px; overflow-x: auto; }
 .debug-answer-preview code { color: #064e3b; font-family: 'SF Mono', Monaco, monospace; }
 
+/* Debug Diff button */
+.debug-diff-btn { flex: 1; padding: 8px 14px; font-size: 13px; color: #7c3aed; background: #f5f3ff; border: 1px solid #c4b5fd; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.debug-diff-btn:hover { background: #ede9fe; }
+.debug-diff-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Debug Cancel button */
+.debug-cancel-btn { padding: 8px 16px; font-size: 13px; color: #dc2626; background: #fff; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer; font-weight: 500; }
+.debug-cancel-btn:hover { background: #fef2f2; }
+
+/* Debug Answer Reference (collapsible) */
+.debug-answer-ref { margin: 0; background: #f0fdf4; border-bottom: 1px solid #bbf7d0; }
+.debug-answer-ref summary { padding: 6px 12px; font-size: 12px; font-weight: 600; color: #166534; cursor: pointer; user-select: none; }
+.debug-answer-ref summary:hover { color: #15803d; }
+.debug-answer-ref pre { margin: 0; padding: 8px 12px; font-size: 12px; line-height: 1.6; overflow-x: auto; background: #f9fafb; color: #1e293b; font-family: 'SF Mono', Monaco, monospace; border-top: 1px solid #dcfce7; }
+
+/* Debug Streaming indicator */
+.debug-streaming { display: flex; align-items: center; gap: 8px; padding: 12px; color: #3b82f6; font-size: 13px; }
+.debug-streaming-dot { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: debug-blink 1s infinite; }
+@keyframes debug-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Debug Result — markdown rendered content */
+.debug-result-body { font-size: 13px; line-height: 1.7; color: #334155; }
+.debug-result-body h1, .debug-result-body h2, .debug-result-body h3 { font-size: 14px; font-weight: 700; color: #1e293b; margin: 10px 0 6px; }
+.debug-result-body h1 { font-size: 15px; }
+.debug-result-body p { margin: 4px 0; }
+.debug-result-body strong { color: #1e40af; }
+.debug-result-body em { font-style: italic; color: #475569; }
+.debug-result-body ul, .debug-result-body ol { margin: 6px 0; padding-left: 20px; }
+.debug-result-body li { margin: 3px 0; }
+.debug-result-body code { font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace; font-size: 12px; background: #f1f5f9; color: #e11d48; padding: 1px 5px; border-radius: 3px; }
+.debug-result-body pre { background: #1e293b; color: #e2e8f0; padding: 10px 12px; border-radius: 6px; margin: 8px 0; overflow-x: auto; font-size: 12px; line-height: 1.6; }
+.debug-result-body pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+.debug-result-body table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12px; }
+.debug-result-body td, .debug-result-body th { border: 1px solid #e2e8f0; padding: 5px 10px; text-align: left; }
+.debug-result-body th { background: #f8fafc; font-weight: 600; color: #1e293b; }
+.debug-result-body hr { border: none; border-top: 1px solid #e2e8f0; margin: 12px 0; }
+
 /* Toast */
 .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); padding: 8px 18px; border-radius: 8px; font-size: 13px; z-index: 2000; transition: opacity 0.3s; }
 .toast.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }

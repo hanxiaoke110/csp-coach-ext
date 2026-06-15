@@ -79,15 +79,17 @@ export default class AIService {
     return messages;
   }
 
-  async sendMessage(content, mode) {
+  async sendMessage(content, mode, history = null, options = {}) {
     await this.ensureConfigured();
-    const messages = this._buildMessages(content, mode);
+    const messages = history !== null
+      ? [{ role: 'system', content: this._buildSystemPrompt(mode) }, ...history, { role: 'user', content }]
+      : this._buildMessages(content, mode);
     const response = await Promise.race([
-      this.provider.chat(messages),
+      this.provider.chat(messages, options),
       new Promise((_, reject) => setTimeout(() => reject(new Error('AI 请求超时（30秒），请检查网络或 API Key')), 30000))
     ]);
-    // Save to session history
-    if (this.sessionService) {
+    // Save to session history (only when using session-based messages)
+    if (this.sessionService && history === null) {
       this.sessionService.addMessage({ role: 'user', content });
       this.sessionService.addMessage({ role: 'assistant', content: response });
       await this.sessionService.saveCurrentSession();
@@ -95,14 +97,16 @@ export default class AIService {
     return response;
   }
 
-  async streamMessage(content, mode, onChunk) {
+  async streamMessage(content, mode, onChunk, history = null, options = {}) {
     await this.ensureConfigured();
-    const messages = this._buildMessages(content, mode);
+    const messages = history !== null
+      ? [{ role: 'system', content: this._buildSystemPrompt(mode) }, ...history, { role: 'user', content }]
+      : this._buildMessages(content, mode);
     let fullContent = '';
     await this.provider.stream(messages, (chunk) => {
       fullContent += chunk;
       if (onChunk) onChunk(chunk, fullContent);
-    });
+    }, options);
     return fullContent;
   }
 

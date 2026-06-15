@@ -30,7 +30,8 @@ export default class AIProvider {
     const response = await fetch(this.endpoint, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: options.signal
     });
 
     const responseText = await response.text();
@@ -63,7 +64,8 @@ export default class AIProvider {
     const response = await fetch(this.endpoint, {
       method: 'POST',
       headers: this.getHeaders(),
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: options.signal
     });
 
     if (!response.ok) {
