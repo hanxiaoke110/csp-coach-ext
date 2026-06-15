@@ -11,7 +11,8 @@
     "https://api.deepseek.com/*",
     "https://open.bigmodel.cn/*",
     "https://api.siliconflow.cn/*",
-    "https://dashscope.aliyuncs.com/*"
+    "https://dashscope.aliyuncs.com/*",
+    "https://api-live-class-crm.codemao.cn/*"
   ],
   "options_page": "options/options.html",
   "web_accessible_resources": [{
